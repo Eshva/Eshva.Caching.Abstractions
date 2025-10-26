@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageId>Eshva.Caching.Abstractions</PackageId>
+    <Version>0.1.0</Version>
+    <Description>Mike Eshva caching abstractions based on Microsoft.Extensions.Caching.Abstractions interfaces (IDistributedCache and IBufferDistributedCache).</Description>
+    <PackageTags>caching;cache;abstractions</PackageTags>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <PackageIcon>cache-abstractions-128.png</PackageIcon>
+    <AssemblyVersion>0.1.0</AssemblyVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net6.0;net7.0;net8.0;net9.0;net462</TargetFrameworks>
+    <RootNamespace>Eshva.Caching.Abstractions</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DocumentationFile>bin\Debug\Eshva.Caching.Abstractions.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DocumentationFile>bin\Release\Eshva.Caching.Abstractions.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="../../../readme.md" Pack="true" PackagePath="/" />
+    <None Include="../../../documentation/cache-abstractions-128.png" Pack="true" PackagePath="/" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations"/>
+    <PackageReference Include="Microsoft.Bcl.TimeProvider" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions"/>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
+  </ItemGroup>
+</Project>

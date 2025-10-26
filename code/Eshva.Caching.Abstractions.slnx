@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/shared/">
+    <File Path="../.gitignore"/>
+    <File Path="../readme.md"/>
+  </Folder>
+  <Folder Name="/shared/dotnet-settings/">
+    <File Path="Directory.Build.props"/>
+    <File Path="Directory.Packages.props"/>
+    <File Path="nuget.config"/>
+  </Folder>
+  <Project Path="solutions/Eshva.Caching.Abstractions/Eshva.Caching.Abstractions.csproj" Type="Classic C#"/>
+</Solution>

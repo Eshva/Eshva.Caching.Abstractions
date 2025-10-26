@@ -22,12 +22,12 @@
     <DocumentationFile>bin\Release\Eshva.Caching.Abstractions.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="../../../readme.md" Pack="true" PackagePath="/" />
-    <None Include="../../../documentation/cache-abstractions-128.png" Pack="true" PackagePath="/" />
+    <None Include="../../../readme.md" Pack="true" PackagePath="/"/>
+    <None Include="../../../documentation/cache-abstractions-128.png" Pack="true" PackagePath="/"/>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations"/>
-    <PackageReference Include="Microsoft.Bcl.TimeProvider" />
+    <PackageReference Include="Microsoft.Bcl.TimeProvider"/>
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions"/>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
   </ItemGroup>

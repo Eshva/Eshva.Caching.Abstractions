@@ -9,4 +9,6 @@
     <File Path="nuget.config"/>
   </Folder>
   <Project Path="solutions/Eshva.Caching.Abstractions/Eshva.Caching.Abstractions.csproj" Type="Classic C#"/>
+  <Project Path="tests\Eshva.Caching.Abstractions.BehaviorTests\Eshva.Caching.Abstractions.BehaviorTests.csproj"
+           Type="Classic C#"/>
 </Solution>

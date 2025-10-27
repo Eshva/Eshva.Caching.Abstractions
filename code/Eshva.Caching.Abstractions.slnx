@@ -3,6 +3,7 @@
     <File Path="../.gitignore" />
     <File Path="../readme.md" />
     <File Path="..\.github\workflows\ci.yaml" />
+    <File Path="..\.github\workflows\release.yaml" />
   </Folder>
   <Folder Name="/shared/dotnet-settings/">
     <File Path="Directory.Build.props" />

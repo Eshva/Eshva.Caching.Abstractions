@@ -22,6 +22,4 @@ jobs:
       - name: Pack
         run: dotnet pack code/Eshva.Caching.Abstractions.slnx --configuration Release /p:Version=${VERSION} --no-build --output .
       - name: Push
-        run: dotnet nuget push Eshva.Caching.Abstractions.${VERSION}.nupkg --source https://nuget.pkg.github.com/eshva/index.json --api-key ${GITHUB_TOKEN}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: dotnet nuget push Eshva.Caching.Abstractions.${VERSION}.nupkg --source https://nuget.pkg.github.com/eshva/index.json --api-key ${secrets.TOKEN}

@@ -1,15 +1,16 @@
 <Solution>
   <Folder Name="/shared/">
-    <File Path="../.gitignore" />
-    <File Path="../readme.md" />
-    <File Path="..\.github\workflows\ci.yaml" />
-    <File Path="..\.github\workflows\release.yaml" />
+    <File Path="../.gitignore"/>
+    <File Path="../readme.md"/>
+    <File Path="..\.github\workflows\ci.yaml"/>
+    <File Path="..\.github\workflows\release.yaml"/>
   </Folder>
   <Folder Name="/shared/dotnet-settings/">
-    <File Path="Directory.Build.props" />
-    <File Path="Directory.Packages.props" />
-    <File Path="nuget.config" />
+    <File Path="Directory.Build.props"/>
+    <File Path="Directory.Packages.props"/>
+    <File Path="nuget.config"/>
   </Folder>
-  <Project Path="solutions/Eshva.Caching.Abstractions/Eshva.Caching.Abstractions.csproj" Type="Classic C#" />
-  <Project Path="tests\Eshva.Caching.Abstractions.BehaviorTests\Eshva.Caching.Abstractions.BehaviorTests.csproj" Type="Classic C#" />
+  <Project Path="solutions/Eshva.Caching.Abstractions/Eshva.Caching.Abstractions.csproj" Type="Classic C#"/>
+  <Project Path="tests\Eshva.Caching.Abstractions.BehaviorTests\Eshva.Caching.Abstractions.BehaviorTests.csproj"
+           Type="Classic C#"/>
 </Solution>

@@ -80,7 +80,7 @@ public class TimeBasedCacheInvalidationSteps {
     }
   }
 
-  [When($"a few cache invalidations requested")]
+  [When("a few cache invalidations requested")]
   public void WhenAFewCacheInvalidationsRequested() {
     try {
       _sut.PurgeEntriesIfRequired();

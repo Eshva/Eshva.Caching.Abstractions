@@ -47,12 +47,7 @@ public class TimeBasedCacheInvalidationSteps {
   [When("a few cache invalidations requested")]
   public void WhenAFewCacheInvalidationsRequested() {
     try {
-      // TODO: Execute requests in parallel.
-      _sut.PurgeEntriesIfRequired();
-      _sut.PurgeEntriesIfRequired();
-      _sut.PurgeEntriesIfRequired();
-      _sut.PurgeEntriesIfRequired();
-      _sut.PurgeEntriesIfRequired();
+      Parallel.For(fromInclusive: 0, toExclusive: 5, _ => _sut.PurgeEntriesIfRequired());
     }
     catch (Exception exception) {
       _errorHandlingContext.LastException = exception;
@@ -101,6 +96,7 @@ public class TimeBasedCacheInvalidationSteps {
     public int NumberOfPurgeStarted { get; private set; }
 
     protected override Task<CacheInvalidationStatistics> DeleteExpiredCacheEntries(CancellationToken token) {
+      Logger.LogDebug("Thread ID: {TreadId}", Environment.CurrentManagedThreadId);
       NumberOfPurgeStarted++;
       _purgingSignal.Set();
       return Task.FromResult(new CacheInvalidationStatistics());

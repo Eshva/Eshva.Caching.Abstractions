@@ -2,7 +2,10 @@
 
   Background:
     Given clock set at today 20:00
-    And time-based cache invalidation with default sliding expiration time 1 minutes
+    And minimal expired entries purging interval is 2 minutes
+    And default sliding expiration interval is 1 minutes
+    And purging interval is 6 minutes
+    And time-based cache invalidation with defined arguments
 
   Scenario: 01. Cache entry which expires later than current time should not be reported as not expired
     Given cache entry that expires today at 20:00:01

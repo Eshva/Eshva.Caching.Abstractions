@@ -12,8 +12,7 @@ namespace Eshva.Caching.Abstractions;
 /// execution is  greater than configured purging interval.
 /// </remarks>
 [PublicAPI]
-public abstract class TimeBasedCacheInvalidation
-  : ICacheInvalidation, ICacheInvalidationNotifier, ICacheInvalidationSynchronicityController {
+public abstract class TimeBasedCacheInvalidation : ICacheInvalidation, ICacheInvalidationNotifier {
   /// <summary>
   /// Initializes a new instance of a time-based cache invalidation.
   /// </summary>
@@ -46,14 +45,17 @@ public abstract class TimeBasedCacheInvalidation
     _settings = settings;
     _timeProvider = timeProvider;
     Logger = logger ?? new NullLogger<TimeBasedCacheInvalidation>();
-    _lastExpirationScan = _timeProvider.GetUtcNow();
+    _cacheInvalidatedAt = _timeProvider.GetUtcNow();
   }
 
   /// <inheritdoc/>
-  public bool ShouldPurgeSynchronously { get; set; }
+  public event EventHandler? CacheInvalidationStarted;
 
   /// <inheritdoc/>
-  public async Task PurgeEntriesIfRequired(CancellationToken token = default) {
+  public event EventHandler<CacheInvalidationStatistics>? CacheInvalidationCompleted;
+
+  /// <inheritdoc/>
+  public void PurgeEntriesIfRequired(CancellationToken token = default) {
     const byte purgingInProgress = 1;
     const byte notYetPurging = 0;
     if (Interlocked.CompareExchange(ref _isPurgingInProgress, purgingInProgress, notYetPurging) == purgingInProgress) {
@@ -64,16 +66,11 @@ public abstract class TimeBasedCacheInvalidation
     if (!ShouldPurgeEntries()) return;
 
     try {
-      _lastExpirationScan = _timeProvider.GetUtcNow();
-      if (ShouldPurgeSynchronously) {
-        await DeleteExpiredCacheEntries(token).ConfigureAwait(continueOnCapturedContext: false);
-      }
-      else {
-        _ = Task.Run(() => DeleteExpiredCacheEntries(token), token);
-      }
+      _cacheInvalidatedAt = _timeProvider.GetUtcNow();
+      _ = Task.Run(() => DeleteExpiredCacheEntries(token), token);
     }
     finally {
-      _isPurgingInProgress = notYetPurging;
+      Interlocked.Exchange(ref _isPurgingInProgress, notYetPurging);
     }
   }
 
@@ -157,25 +154,36 @@ public abstract class TimeBasedCacheInvalidation
   /// Purger logic.
   /// </summary>
   /// <param name="token">Cancellation token.</param>
-  /// <returns>Purge operation statistics.</returns>
-  protected abstract Task DeleteExpiredCacheEntries(CancellationToken token);
+  /// <returns>Cache invalidation statistics.</returns>
+  protected abstract Task<CacheInvalidationStatistics> DeleteExpiredCacheEntries(CancellationToken token);
 
   /// <summary>
   /// Notify cache invalidation started.
   /// </summary>
-  protected void NotifyPurgeStarted() => CacheInvalidationStarted?.Invoke(this, EventArgs.Empty);
+  private void NotifyPurgeStarted() =>
+    CacheInvalidationStarted?.Invoke(this, EventArgs.Empty);
 
   /// <summary>
   /// Notify cache invalidation completed.
   /// </summary>
-  /// <param name="totalCount">Total cache entries scanned.</param>
-  /// <param name="purgedCount">Cache entries purged.</param>
-  protected void NotifyPurgeCompleted(uint totalCount, uint purgedCount) =>
-    CacheInvalidationCompleted?.Invoke(this, new CacheInvalidationStatistics(totalCount, purgedCount));
+  /// <param name="statistics">Cache invalidation statistics.</param>
+  private void NotifyPurgeCompleted(CacheInvalidationStatistics statistics) =>
+    CacheInvalidationCompleted?.Invoke(this, statistics);
+
+  private async Task InvalidateCache(CancellationToken token = default) {
+    CacheInvalidationStatistics statistics = default;
+    try {
+      NotifyPurgeStarted();
+      statistics = await DeleteExpiredCacheEntries(token).ConfigureAwait(continueOnCapturedContext: false);
+    }
+    finally {
+      NotifyPurgeCompleted(statistics);
+    }
+  }
 
   private bool ShouldPurgeEntries() {
     var utcNow = _timeProvider.GetUtcNow();
-    var timePassedSinceTheLastPurging = utcNow - _lastExpirationScan;
+    var timePassedSinceTheLastPurging = utcNow - _cacheInvalidatedAt;
     if (timePassedSinceTheLastPurging < _settings.ExpiredEntriesPurgingInterval) {
       Logger.LogDebug(
         "Since the last cache invalidation {TimePassed} has passed that is less than {PurgingInterval}. Purging is not required",
@@ -191,14 +199,8 @@ public abstract class TimeBasedCacheInvalidation
     return true;
   }
 
-  /// <inheritdoc/>
-  public event EventHandler? CacheInvalidationStarted;
-
-  /// <inheritdoc/>
-  public event EventHandler<CacheInvalidationStatistics>? CacheInvalidationCompleted;
-
   private readonly TimeBasedCacheInvalidationSettings _settings;
   private readonly TimeProvider _timeProvider;
+  private DateTimeOffset _cacheInvalidatedAt;
   private int _isPurgingInProgress;
-  private DateTimeOffset _lastExpirationScan;
 }

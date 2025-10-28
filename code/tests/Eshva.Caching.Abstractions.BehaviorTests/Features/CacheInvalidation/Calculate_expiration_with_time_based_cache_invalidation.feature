@@ -2,7 +2,10 @@
 
   Background:
     Given clock set at today 20:00
-    And time-based cache invalidation with default sliding expiration time 1 minutes
+    And minimal expired entries purging interval is 2 minutes
+    And default sliding expiration interval is 1 minutes
+    And purging interval is 6 minutes
+    And time-based cache invalidation with defined arguments
 
   Scenario: 01. Given only absolute expiration on expiration calculation it should return absolute expriation
     Given absolute expiration today at 21:00

@@ -8,8 +8,8 @@ namespace Eshva.Caching.Abstractions;
 [PublicAPI]
 public interface ICacheInvalidation {
   /// <summary>
-  /// Execute scan for expired cache entries if required according to behavior logic.
+  /// Execute scan for expired cache entries if required.
   /// </summary>
   /// <param name="token">Cancellation token.</param>
-  Task PurgeEntriesIfRequired(CancellationToken token = default);
+  void PurgeEntriesIfRequired(CancellationToken token = default);
 }

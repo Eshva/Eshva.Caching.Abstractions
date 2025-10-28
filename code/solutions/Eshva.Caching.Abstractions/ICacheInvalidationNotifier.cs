@@ -8,12 +8,12 @@ namespace Eshva.Caching.Abstractions;
 [PublicAPI]
 public interface ICacheInvalidationNotifier {
   /// <summary>
-  /// Notifies cache invalidation is started.
+  /// Notifies cache invalidation started.
   /// </summary>
   event EventHandler CacheInvalidationStarted;
 
   /// <summary>
-  /// Notifies cache invalidation is completed.
+  /// Notifies cache invalidation completed.
   /// </summary>
   event EventHandler<CacheInvalidationStatistics> CacheInvalidationCompleted;
 }

@@ -7,34 +7,34 @@
 
   Scenario: 01. Given only absolute expiration on expiration calculation it should return absolute expriation
     Given absolute expiration today at 21:00
-    And no sliding expiration
+    And no sliding expiration time
     When I calculate expiration time
-    Then it should be today at 21:00
+    Then calculated expiration time should be today at 21:00
 
   Scenario: 02. Given only sliding expiration on expiration calculation it should advance current time with sliding expriation
-    Given no absolute expiration
+    Given no absolute expiration time
     And sliding expiration in 10 minutes
     And time passed by 5 minutes
     When I calculate expiration time
-    Then it should be today at 20:15
+    Then calculated expiration time should be today at 20:15
 
   Scenario: 03. Given no expirations on expiration calculation it should advance current time with default sliding expriation
-    Given no absolute expiration
-    And no sliding expiration
+    Given no absolute expiration time
+    And no sliding expiration time
     And time passed by 5 minutes
     When I calculate expiration time
-    Then it should be today at 20:06
+    Then calculated expiration time should be today at 20:06
 
   Scenario: 04. Given both expirations and absolute expiration in future of sliding expiration on expiration calculation it should advance current time with sliding expriation
     Given absolute expiration today at 21:00
     And sliding expiration in 40 minutes
     And time passed by 19 minutes
     When I calculate expiration time
-    Then it should be today at 20:59
+    Then calculated expiration time should be today at 20:59
 
   Scenario: 05. Given both expirations and absolute expiration in past of sliding expiration on expiration calculation it should return absolute expriation
     Given absolute expiration today at 21:00
     And sliding expiration in 40 minutes
     And time passed by 21 minutes
     When I calculate expiration time
-    Then it should be today at 21:00
+    Then calculated expiration time should be today at 21:00

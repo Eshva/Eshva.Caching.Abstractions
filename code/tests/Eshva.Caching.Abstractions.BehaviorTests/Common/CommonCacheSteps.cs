@@ -28,5 +28,9 @@ public class CommonCacheSteps {
   public void GivenTimePassedByDoubleMinutes(double minutes) =>
     _cachesContext.TimeProvider.Advance(TimeSpan.FromMinutes(minutes));
 
+  [Given("time provider is not specified")]
+  public void GivenTimeProviderIsNotSpecified() =>
+    _cachesContext.TimeProvider = null!;
+
   private readonly CachesContext _cachesContext;
 }

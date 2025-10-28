@@ -28,5 +28,5 @@ public class CachesContext {
 
   public TimeSpan MinimalPurgingInterval { get; set; }
 
-  public FakeTimeProvider TimeProvider { get; }
+  public FakeTimeProvider TimeProvider { get; set; }
 }

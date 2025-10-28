@@ -12,6 +12,10 @@ public class ErrorHandlingSteps {
   [Then("no errors are reported")]
   public void ThenNoErrorsAreReported() => _errorHandlingContext.LastException.Should().BeNull();
 
+  [Then("argument not specified exception should be reported")]
+  public void ThenArgumentNotSpecifiedExceptionShouldBeReported() =>
+    _errorHandlingContext.LastException.Should().NotBeNull().And.BeOfType<ArgumentNullException>();
+
   [Then("argument out of range exception should be reported")]
   public void ThenArgumentOutOfRangeExceptionShouldBeReported() =>
     _errorHandlingContext.LastException.Should().NotBeNull().And.BeOfType<ArgumentOutOfRangeException>();

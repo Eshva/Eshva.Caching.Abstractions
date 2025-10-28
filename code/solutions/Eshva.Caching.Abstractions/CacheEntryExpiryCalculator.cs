@@ -14,7 +14,9 @@ public sealed class CacheEntryExpiryCalculator {
   /// </exception>
   public CacheEntryExpiryCalculator(TimeSpan defaultSlidingExpirationInterval, TimeProvider timeProvider) {
     _timeProvider = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
-    _defaultSlidingExpirationInterval = defaultSlidingExpirationInterval;
+    _defaultSlidingExpirationInterval = defaultSlidingExpirationInterval >= TimeSpan.FromMinutes(value: 1)
+      ? defaultSlidingExpirationInterval
+      : throw new ArgumentOutOfRangeException(nameof(defaultSlidingExpirationInterval));
   }
 
   /// <summary>

@@ -41,6 +41,10 @@ public class CacheEntryExpiryCalculatorSteps {
   public void GivenAbsoluteExpirationTodayAt(TimeSpan absoluteExpirationTime) =>
     _absoluteExpiration = _cachesContext.Today.Add(absoluteExpirationTime);
 
+  [When("I construct cache entry expiry calculator")]
+  public void WhenIConstructCacheEntryExpiryCalculator() =>
+    GivenCacheEntryExpiryCalculatorWithDefinedArguments();
+
   [When("I check is cache entry expired")]
   public void WhenICheckIsCacheEntryExpired() =>
     _isExpired = _sut.IsCacheEntryExpired(_expiresAt);

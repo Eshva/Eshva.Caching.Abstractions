@@ -1,11 +1,9 @@
-﻿Feature: Calculate expiration with time-based cache invalidation
+﻿Feature: Calculate expiration with expiry calculator
 
   Background:
     Given clock set at today 20:00
-    And minimal expired entries purging interval is 2 minutes
     And default sliding expiration interval is 1 minutes
-    And purging interval is 6 minutes
-    And time-based cache invalidation with defined arguments
+    And cache entry expiry calculator with defined arguments
 
   Scenario: 01. Given only absolute expiration on expiration calculation it should return absolute expriation
     Given absolute expiration today at 21:00

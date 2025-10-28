@@ -1,4 +1,4 @@
-﻿Feature: Time-based cache invalidation expired entries purging
+﻿Feature: Cache invalidation with time-based cache invalidation
 
   Background:
     Given minimal expired entries purging interval is 2 minutes
@@ -8,14 +8,14 @@
 
   Scenario: 01. Purging should start on time
     Given time passed by 6 minutes
-    When cache invalidation requested
+    When I request cache invalidation
     Then awaited purging is finished
     And no errors are reported
     And purging should be done
 
   Scenario: 02. Purging should not start if time has not yet come
     Given time passed by 5 minutes
-    When cache invalidation requested
+    When I request cache invalidation
     Then awaited purging is finished
     And no errors are reported
     And purging should not start

@@ -1,11 +1,11 @@
-﻿Feature: Is cache entry expired with time-based cache invalidation
+﻿Feature: Is cache entry expired with expiry calculator
 
   Background:
     Given clock set at today 20:00
     And minimal expired entries purging interval is 2 minutes
     And default sliding expiration interval is 1 minutes
     And purging interval is 6 minutes
-    And time-based cache invalidation with defined arguments
+    And cache entry expiry calculator with defined arguments
 
   Scenario: 01. Cache entry which expires later than current time should not be reported as not expired
     Given cache entry that expires today at 20:00:01

@@ -22,11 +22,11 @@ public class CachesContext {
 
   public DateTimeOffset Today { get; }
 
-  public TimeSpan ExpiredEntriesPurgingInterval { get; set; }
+  public TimeSpan PurgingInterval { get; set; }
 
   public TimeSpan DefaultSlidingExpirationInterval { get; set; }
 
-  public FakeTimeProvider TimeProvider { get; }
+  public TimeSpan MinimalPurgingInterval { get; set; }
 
-  public byte[]? GottenCacheEntryValue { get; set; } = [];
+  public FakeTimeProvider TimeProvider { get; }
 }

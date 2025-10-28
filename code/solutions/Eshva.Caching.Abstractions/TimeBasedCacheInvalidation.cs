@@ -33,7 +33,6 @@ public abstract class TimeBasedCacheInvalidation : ICacheInvalidation, ICacheInv
     TimeProvider timeProvider,
     ILogger? logger = null) {
     if (settings is null) throw new ArgumentNullException(nameof(settings));
-    if (timeProvider is null) throw new ArgumentNullException(nameof(timeProvider));
 
     if (settings.ExpiredEntriesPurgingInterval < minimalExpiredEntriesPurgingInterval) {
       throw new ArgumentOutOfRangeException(
@@ -42,9 +41,10 @@ public abstract class TimeBasedCacheInvalidation : ICacheInvalidation, ICacheInv
         + $"than minimal allowed value {minimalExpiredEntriesPurgingInterval}.");
     }
 
-    _settings = settings;
-    _timeProvider = timeProvider;
+    _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+    _timeProvider = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
     Logger = logger ?? new NullLogger<TimeBasedCacheInvalidation>();
+    ExpiryCalculator = new CacheEntryExpiryCalculator(settings.DefaultSlidingExpirationInterval, timeProvider);
     _cacheInvalidatedAt = _timeProvider.GetUtcNow();
   }
 
@@ -58,6 +58,7 @@ public abstract class TimeBasedCacheInvalidation : ICacheInvalidation, ICacheInv
   public void PurgeEntriesIfRequired(CancellationToken token = default) {
     const byte purgingInProgress = 1;
     const byte notYetPurging = 0;
+
     if (Interlocked.CompareExchange(ref _isPurgingInProgress, purgingInProgress, notYetPurging) == purgingInProgress) {
       Logger.LogDebug("Purging already in progress");
       return;
@@ -75,87 +76,29 @@ public abstract class TimeBasedCacheInvalidation : ICacheInvalidation, ICacheInv
   }
 
   /// <summary>
-  /// Decide is cache entry expired given its expiration moment <paramref name="expiresAtUtc"/>.
-  /// </summary>
-  /// <remarks>
-  /// Entry is expired if its expiration moment equals or greater than the current date/time.
-  /// </remarks>
-  /// <param name="expiresAtUtc">Cache entry expiration moment.</param>
-  /// <returns>
-  /// <c>true</c> - entry is expired and should be deleted from the cache, <c>false</c> - entry is not expired yet.
-  /// </returns>
-  public bool IsCacheEntryExpired(DateTimeOffset expiresAtUtc) => expiresAtUtc <= _timeProvider.GetUtcNow();
-
-  /// <summary>
-  /// Calculates absolute expiration given absolute and relative expiration.
-  /// </summary>
-  /// <remarks>
-  /// If given absolute expiration returns it. If given relative expiration returns adjust the current moment by relative
-  /// expiration. If both are <c>null</c> return <c>null</c>.
-  /// </remarks>
-  /// <param name="absoluteExpiration">Absolute expiration.</param>
-  /// <param name="relativeExpiration">Relative expiration to the current moment.</param>
-  /// <returns>Absolute expiration.</returns>
-  public DateTimeOffset? CalculateAbsoluteExpiration(DateTimeOffset? absoluteExpiration, TimeSpan? relativeExpiration) {
-    if (absoluteExpiration.HasValue) return absoluteExpiration.Value;
-    if (relativeExpiration.HasValue) return _timeProvider.GetUtcNow().Add(relativeExpiration.Value);
-    return null;
-  }
-
-  /// <summary>
-  /// Calculate cache entry expiration moment given its expiration options.
-  /// </summary>
-  /// <remarks>
-  /// <list type="bullet">
-  /// <item>If only <paramref name="absoluteExpirationUtc"/> given returns <paramref name="absoluteExpirationUtc"/> value.</item>
-  /// <item>
-  /// If only <paramref name="slidingExpiration"/> given returns current UTC-time plus
-  /// <paramref name="slidingExpiration"/> value.
-  /// </item>
-  /// <item>
-  /// If both <paramref name="absoluteExpirationUtc"/> and <paramref name="slidingExpiration"/> given and absolute
-  /// expiration happens earlier than sliding returns <paramref name="absoluteExpirationUtc"/>.
-  /// </item>
-  /// <item>
-  /// If both arguments not provided returns current UTC-time plus
-  /// <see cref="TimeBasedCacheInvalidationSettings.DefaultSlidingExpirationInterval"/> value.
-  /// </item>
-  /// <item>Otherwise returns current UTC-time plus <paramref name="slidingExpiration"/> value.</item>
-  /// </list>
-  /// </remarks>
-  /// <param name="absoluteExpirationUtc">Absolute expiration data/time.</param>
-  /// <param name="slidingExpiration">Sliding expiration time.</param>
-  /// <returns>
-  /// New cache entry expiration moment.
-  /// </returns>
-  public DateTimeOffset CalculateExpiration(DateTimeOffset? absoluteExpirationUtc, TimeSpan? slidingExpiration) {
-    if (absoluteExpirationUtc.HasValue && !slidingExpiration.HasValue) {
-      return absoluteExpirationUtc.Value;
-    }
-
-    if (!absoluteExpirationUtc.HasValue && slidingExpiration.HasValue) {
-      return _timeProvider.GetUtcNow().Add(slidingExpiration.Value);
-    }
-
-    if (!absoluteExpirationUtc.HasValue || !slidingExpiration.HasValue) {
-      return _timeProvider.GetUtcNow().Add(_settings.DefaultSlidingExpirationInterval);
-    }
-
-    var slidingExpirationUtc = _timeProvider.GetUtcNow().Add(slidingExpiration.Value);
-    return absoluteExpirationUtc.Value <= slidingExpirationUtc ? absoluteExpirationUtc.Value : slidingExpirationUtc;
-  }
-
-  /// <summary>
   /// Logger.
   /// </summary>
   protected ILogger Logger { get; }
 
   /// <summary>
+  /// Cache entry expiry calculator.
+  /// </summary>
+  /// <remarks>
+  /// Derived types should implement this method and use <see cref="ExpiryCalculator"/> to handle cache entries expiration
+  /// calculation.
+  /// </remarks>
+  protected CacheEntryExpiryCalculator ExpiryCalculator { get; }
+
+  /// <summary>
   /// Purger logic.
   /// </summary>
-  /// <param name="token">Cancellation token.</param>
+  /// <remarks>
+  /// Derived types should implement this method and use <see cref="ExpiryCalculator"/> to handle cache entries expiration
+  /// calculation.
+  /// </remarks>
+  /// <param name="cancellation">Cancellation token.</param>
   /// <returns>Cache invalidation statistics.</returns>
-  protected abstract Task<CacheInvalidationStatistics> DeleteExpiredCacheEntries(CancellationToken token);
+  protected abstract Task<CacheInvalidationStatistics> DeleteExpiredCacheEntries(CancellationToken cancellation);
 
   /// <summary>
   /// Notify cache invalidation started.

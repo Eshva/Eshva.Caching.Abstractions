@@ -22,7 +22,7 @@ jobs:
             dotnet: '9.0.x'
           - os: windows-latest
             framework: net462
-            dotnet: '4.8.1'
+            dotnet: '9.0.x'
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     steps:

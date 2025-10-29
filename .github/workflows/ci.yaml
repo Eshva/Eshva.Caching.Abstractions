@@ -36,5 +36,5 @@ jobs:
           dotnet-quality: ga
       - name: Build sources
         run: dotnet build code/Eshva.Caching.Abstractions.slnx --configuration Release --framework ${{ matrix.framework }}
-      - name: Check quality
+      - name: Validate quality
         run: dotnet test code/Eshva.Caching.Abstractions.slnx --configuration Release --no-build --framework ${{ matrix.framework }}

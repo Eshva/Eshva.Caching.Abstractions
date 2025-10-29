@@ -15,24 +15,20 @@ public class TimeBasedCacheInvalidationSteps {
   }
 
   [Given("time-based cache invalidation with defined arguments")]
-  public void GivenTimeBasedCacheInvalidationWithDefinedArguments() {
-    try {
-      _sut = new TestCacheInvalidation(
-        _cachesContext.PurgingInterval,
-        _cachesContext.DefaultSlidingExpirationInterval,
-        _cachesContext.MinimalPurgingInterval,
-        _cachesContext.TimeProvider,
-        XUnitLogger.CreateLogger<TestCacheInvalidation>(_cachesContext.XUnitLogger),
-        _purgingSignal);
-    }
-    catch (Exception exception) {
-      _errorHandlingContext.LastException = exception;
-    }
-  }
+  public void GivenTimeBasedCacheInvalidationWithDefinedArguments() =>
+    WhenIConstructTimeBasedCacheInvalidationWithDefinedArguments();
 
   [When("I construct time-based cache invalidation with defined arguments")]
   public void WhenIConstructTimeBasedCacheInvalidationWithDefinedArguments() =>
-    GivenTimeBasedCacheInvalidationWithDefinedArguments();
+    CreateTimeBasedCacheInvalidation(
+      new TimeBasedCacheInvalidationSettings {
+        DefaultSlidingExpirationInterval = _cachesContext.DefaultSlidingExpirationInterval,
+        ExpiredEntriesPurgingInterval = _cachesContext.PurgingInterval
+      });
+
+  [When("I construct time-based cache invalidation with settings not specified")]
+  public void WhenIConstructTimeBasedCacheInvalidationWithSettingsNotSpecified() =>
+    CreateTimeBasedCacheInvalidation(settings: null);
 
   [When("I request cache invalidation")]
   public void WhenIRequestCacheInvalidation() {
@@ -70,6 +66,20 @@ public class TimeBasedCacheInvalidationSteps {
   public void ThenAwaitedPurgingIsFinished() =>
     _purgingSignal.Wait(TimeSpan.FromSeconds(seconds: 1));
 
+  private void CreateTimeBasedCacheInvalidation(TimeBasedCacheInvalidationSettings? settings) {
+    try {
+      _sut = new TestCacheInvalidation(
+        _cachesContext.MinimalPurgingInterval,
+        settings!,
+        _cachesContext.TimeProvider,
+        XUnitLogger.CreateLogger<TestCacheInvalidation>(_cachesContext.XUnitLogger),
+        _purgingSignal);
+    }
+    catch (Exception exception) {
+      _errorHandlingContext.LastException = exception;
+    }
+  }
+
   private readonly CachesContext _cachesContext;
   private readonly ErrorHandlingContext _errorHandlingContext;
   private readonly ManualResetEventSlim _purgingSignal;
@@ -77,16 +87,13 @@ public class TimeBasedCacheInvalidationSteps {
 
   private sealed class TestCacheInvalidation : TimeBasedCacheInvalidation {
     public TestCacheInvalidation(
-      TimeSpan expiredEntriesPurgingInterval,
-      TimeSpan defaultSlidingExpirationInterval,
       TimeSpan minimalExpiredEntriesPurgingInterval,
+      TimeBasedCacheInvalidationSettings settings,
       TimeProvider timeProvider,
       ILogger logger,
       ManualResetEventSlim purgingSignal)
       : base(
-        new TimeBasedCacheInvalidationSettings {
-          ExpiredEntriesPurgingInterval = expiredEntriesPurgingInterval, DefaultSlidingExpirationInterval = defaultSlidingExpirationInterval
-        },
+        settings,
         minimalExpiredEntriesPurgingInterval,
         timeProvider,
         logger) {

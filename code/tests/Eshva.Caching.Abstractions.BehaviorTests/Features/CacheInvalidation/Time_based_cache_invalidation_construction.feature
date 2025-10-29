@@ -18,3 +18,15 @@
     Given purging interval is 1 minutes
     When I construct time-based cache invalidation with defined arguments
     Then argument out of range exception should be reported
+
+  Scenario: 04. Should report an error if settings not specified
+    Given purging interval is 2 minutes
+    When I construct time-based cache invalidation with settings not specified
+    Then argument not specified exception should be reported
+
+  Scenario: 05. Should report an error if time provider not specified
+    Given purging interval is 2 minutes
+    And time provider is not specified
+    When I construct time-based cache invalidation with defined arguments
+    Then argument not specified exception should be reported
+

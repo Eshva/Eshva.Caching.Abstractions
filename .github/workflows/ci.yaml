@@ -21,8 +21,8 @@ jobs:
           - framework: net9.0
             dotnet: '9.0.x'
           - os: windows-latest
-            framework: 4.8.1
-            dotnet: 'net462'
+            framework: net462
+            dotnet: '4.8.1'
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     steps:
@@ -34,7 +34,7 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet }}
           dotnet-quality: ga
-      - name: Create teporary global.json
+      - name: Create temporary global.json
         run: |
           echo '{"sdk":{"version": "${{ steps.setup-dotnet.outputs.dotnet-version }}" } }' > ./global.json
       - name: Build sources

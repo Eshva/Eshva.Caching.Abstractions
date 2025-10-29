@@ -20,5 +20,6 @@
     <DebugType>embedded</DebugType>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
+    <NoWarn>NU1701</NoWarn>
   </PropertyGroup>
 </Project>

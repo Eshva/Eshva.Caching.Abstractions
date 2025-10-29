@@ -64,7 +64,7 @@ public class TimeBasedCacheInvalidationSteps {
 
   [Then("awaited purging is finished")]
   public void ThenAwaitedPurgingIsFinished() =>
-    _purgingSignal.Wait(TimeSpan.FromSeconds(seconds: 1));
+    _purgingSignal.Wait(TimeSpan.FromSeconds(value: 1D));
 
   private void CreateTimeBasedCacheInvalidation(TimeBasedCacheInvalidationSettings? settings) {
     try {

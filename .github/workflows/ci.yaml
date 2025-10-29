@@ -10,9 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Build
+      - name: Checkout sources
+        uses: actions/checkout@v5
+      - name: Build sources
         run: dotnet build code/Eshva.Caching.Abstractions.slnx --configuration Release
-      - name: Test
+      - name: Check quality
         run: dotnet test code/Eshva.Caching.Abstractions.slnx --configuration Release --no-build

@@ -6,13 +6,39 @@ on:
     branches:
       - master
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  build-and-test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        framework: [net6.0, net7.0, net8.0, net9.0]
+        include:
+          - framework: net6.0
+            dotnet: '6.0.x'
+          - framework: net7.0
+            dotnet: '7.0.x'
+          - framework: net8.0
+            dotnet: '8.0.x'
+          - framework: net9.0
+            dotnet: '9.0.x'
+          - os: windows-latest
+            framework: 4.8.1
+            dotnet: 'net462'
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     steps:
       - name: Checkout sources
         uses: actions/checkout@v5
+      - name: Setup .NET ${{ matrix.dotnet }} on ${{ matrix.os }}
+        id: setup-dotnet
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ matrix.dotnet }}
+          dotnet-quality: ga
+      - name: Create teporary global.json
+        run: |
+          echo '{"sdk":{"version": "${{ steps.setup-dotnet.outputs.dotnet-version }}" } }' > ./global.json
       - name: Build sources
-        run: dotnet build code/Eshva.Caching.Abstractions.slnx --configuration Release
+        run: dotnet build code/Eshva.Caching.Abstractions.slnx --configuration Release --framework ${{ matrix.framework }}
       - name: Check quality
-        run: dotnet test code/Eshva.Caching.Abstractions.slnx --configuration Release --no-build
+        run: dotnet test code/Eshva.Caching.Abstractions.slnx --configuration Release --no-build --framework ${{ matrix.framework }}
+

@@ -50,21 +50,17 @@ public class TimeBasedCacheInvalidationSteps {
     }
   }
 
-  [Then("purging should be done")]
-  public void ThenPurgingShouldBeDone() =>
-    _sut.NumberOfPurgeStarted.Should().BeGreaterThan(expected: 0);
+  [Then("purging is successfully done")]
+  public void ThenPurgingIsSuccessfullyDone() =>
+    _purgingSignal.Wait(TimeSpan.FromSeconds(value: 1D)).Should().BeTrue();
 
-  [Then("purging should not start")]
-  public void ThenPurgingShouldNotStart() =>
-    _sut.NumberOfPurgeStarted.Should().Be(expected: 0);
+  [Then("purging is not started")]
+  public void ThenPurgingIsNotStarted() =>
+    _purgingSignal.Wait(TimeSpan.FromSeconds(value: 1D)).Should().BeFalse();
 
   [Then("only one purging should be done")]
   public void ThenOnlyOnePurgingShouldBeDone() =>
     _sut.NumberOfPurgeStarted.Should().Be(expected: 1);
-
-  [Then("awaited purging is finished")]
-  public void ThenAwaitedPurgingIsFinished() =>
-    _purgingSignal.Wait(TimeSpan.FromSeconds(value: 1D));
 
   private void CreateTimeBasedCacheInvalidation(TimeBasedCacheInvalidationSettings? settings) {
     try {

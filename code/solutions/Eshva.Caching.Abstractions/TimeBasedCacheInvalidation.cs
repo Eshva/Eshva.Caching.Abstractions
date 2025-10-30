@@ -48,6 +48,15 @@ public abstract class TimeBasedCacheInvalidation : ICacheInvalidation, ICacheInv
     _cacheInvalidatedAt = _timeProvider.GetUtcNow();
   }
 
+  /// <summary>
+  /// Cache entry expiry calculator.
+  /// </summary>
+  /// <remarks>
+  /// Derived types should implement this method and use <see cref="ExpiryCalculator"/> to handle cache entries expiration
+  /// calculation.
+  /// </remarks>
+  public CacheEntryExpiryCalculator ExpiryCalculator { get; }
+
   /// <inheritdoc/>
   public event EventHandler? CacheInvalidationStarted;
 
@@ -79,15 +88,6 @@ public abstract class TimeBasedCacheInvalidation : ICacheInvalidation, ICacheInv
   /// Logger.
   /// </summary>
   protected ILogger Logger { get; }
-
-  /// <summary>
-  /// Cache entry expiry calculator.
-  /// </summary>
-  /// <remarks>
-  /// Derived types should implement this method and use <see cref="ExpiryCalculator"/> to handle cache entries expiration
-  /// calculation.
-  /// </remarks>
-  protected CacheEntryExpiryCalculator ExpiryCalculator { get; }
 
   /// <summary>
   /// Purger logic.

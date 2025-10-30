@@ -43,7 +43,7 @@ jobs:
         uses: actions/upload-artifact@v5
         with:
           name: Test results with .NET ${{ matrix.dotnet }} on ${{ matrix.os }}
-          path: test_result.xml
+          path: ./**/test_result.xml
   publish-test-results:
     name: Publish tests results
     needs: verify-quality

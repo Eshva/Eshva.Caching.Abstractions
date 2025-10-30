@@ -42,7 +42,7 @@ jobs:
         if: (!cancelled())
         uses: actions/upload-artifact@v5
         with:
-          name: Test results with .NET ${{ matrix.dotnet }} on ${{ matrix.os }}
+          name: Test results with .NET ${{ matrix.framework }} on ${{ matrix.os }}
           path: ./**/test_result.xml
   publish-test-results:
     name: Publish tests results

@@ -34,13 +34,13 @@ jobs:
           dotnet-version: ${{ matrix.dotnet }}
           dotnet-quality: ga
       - name: Verify quality
-        run: dotnet test code/Eshva.Caching.Abstractions.slnx --configuration Release --framework ${{ matrix.framework }} --logger:"xunit;LogFilePath=test_result.xml"
+        run: dotnet test code/Eshva.Caching.Abstractions.slnx --configuration Release --framework ${{ matrix.framework }} --logger:"xunit;LogFilePath=test_result.xml" --results-directory .
       - name: Upload test results
         if: (!cancelled())
         uses: actions/upload-artifact@v5
         with:
-          name: Test results with .NET ${{ matrix.dotnet }} on ${{ matrix.os }}
-          path: test_result.xml
+          name: Test results with .NET ${{ matrix.framework }} on ${{ matrix.os }}
+          path: ./**/test_result.xml
   publish-test-results:
     name: Publish tests results
     needs: verify-quality

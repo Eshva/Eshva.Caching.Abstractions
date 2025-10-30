@@ -4,16 +4,17 @@
     <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="JetBrains.Annotations" Version="2025.2.2"/>
-    <PackageVersion Include="Microsoft.Bcl.TimeProvider" Version="9.0.10"/>
-    <PackageVersion Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.8"/>
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.8"/>
-    <PackageVersion Include="FluentAssertions" Version="6.12.0"/>
-    <PackageVersion Include="Meziantou.Extensions.Logging.Xunit" Version="1.0.17"/>
-    <PackageVersion Include="Microsoft.Extensions.TimeProvider.Testing" Version="9.9.0"/>
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
-    <PackageVersion Include="Reqnroll.xUnit" Version="3.0.0"/>
-    <PackageVersion Include="xunit" Version="2.9.3"/>
-    <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2"/>
+    <PackageVersion Include="JetBrains.Annotations" Version="2025.2.2" />
+    <PackageVersion Include="Microsoft.Bcl.TimeProvider" Version="9.0.10" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.8" />
+    <PackageVersion Include="FluentAssertions" Version="6.12.0" />
+    <PackageVersion Include="Meziantou.Extensions.Logging.Xunit" Version="1.0.17" />
+    <PackageVersion Include="Microsoft.Extensions.TimeProvider.Testing" Version="9.9.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageVersion Include="Reqnroll.xUnit" Version="3.0.0" />
+    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
+    <PackageVersion Include="XunitXml.TestLogger" Version="7.0.2" />
   </ItemGroup>
 </Project>

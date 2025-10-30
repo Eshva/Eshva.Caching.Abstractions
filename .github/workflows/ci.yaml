@@ -7,7 +7,7 @@ on:
     branches:
       - master
 jobs:
-  build-and-test:
+  verify-quality:
     name: Verify quality
     strategy:
       matrix:
@@ -46,7 +46,7 @@ jobs:
           path: test_result.xml
   publish-test-results:
     name: Publish tests results
-    needs: build-and-test
+    needs: verify-quality
     runs-on: ubuntu-latest
     permissions:
       checks: write

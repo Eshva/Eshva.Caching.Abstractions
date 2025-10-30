@@ -4,8 +4,8 @@ on:
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
 jobs:
-  build-and-test:
-    name: Build and validate quality
+  verify-quality:
+    name: Verify quality
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest ]
@@ -33,13 +33,39 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet }}
           dotnet-quality: ga
-      - name: Build sources
-        run: dotnet build code/Eshva.Caching.Abstractions.slnx --configuration Release --framework ${{ matrix.framework }}
-      - name: Validate quality
-        run: dotnet test code/Eshva.Caching.Abstractions.slnx --configuration Release --no-build --framework ${{ matrix.framework }}
+      - name: Verify quality
+        run: dotnet test code/Eshva.Caching.Abstractions.slnx --configuration Release --framework ${{ matrix.framework }} --logger:"xunit;LogFilePath=test_result.xml"
+      - name: Upload test results
+        if: (!cancelled())
+        uses: actions/upload-artifact@v5
+        with:
+          name: Test results with .NET ${{ matrix.dotnet }} on ${{ matrix.os }}
+          path: test_result.xml
+  publish-test-results:
+    name: Publish tests results
+    needs: verify-quality
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+      contents: read
+      issues: read
+    if: (!cancelled())
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v6
+        with:
+          path: artifacts
+      - name: Publish test results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: "artifacts/**/*.xml"
+          report_individual_runs: true
+          check_name: "Test results"
+          action_fail: true
   build-and-publish:
     name: Build the NuGet-package and publish it to nuget.org
-    needs: build-and-test
+    needs: [verify-quality, publish-test-results]
     permissions:
       contents: read
       id-token: write

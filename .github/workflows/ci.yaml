@@ -1,3 +1,4 @@
+name: CI build to verify quality
 on:
   push:
     branches:

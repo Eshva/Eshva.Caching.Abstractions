@@ -2,7 +2,6 @@
 
   Background:
     Given clock set at today 20:00
-    And minimal expired entries purging interval is 2 minutes
     And default sliding expiration interval is 1 minutes
     And purging interval is 6 minutes
     And cache entry expiry calculator with defined arguments

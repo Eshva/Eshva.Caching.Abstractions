@@ -11,16 +11,6 @@ public class CacheEntryExpiryCalculatorSteps {
     _errorHandlingContext = errorHandlingContext;
   }
 
-  [Given("cache entry expiry calculator with defined arguments")]
-  public void GivenCacheEntryExpiryCalculatorWithDefinedArguments() {
-    try {
-      _sut = new CacheEntryExpiryCalculator(_cachesContext.DefaultSlidingExpirationInterval, _cachesContext.TimeProvider);
-    }
-    catch (Exception exception) {
-      _errorHandlingContext.LastException = exception;
-    }
-  }
-
   [Given("no absolute expiration time")]
   public void GivenNoAbsoluteExpirationTime() =>
     _absoluteExpiration = null;
@@ -51,20 +41,20 @@ public class CacheEntryExpiryCalculatorSteps {
 
   [When("I construct cache entry expiry calculator")]
   public void WhenIConstructCacheEntryExpiryCalculator() =>
-    GivenCacheEntryExpiryCalculatorWithDefinedArguments();
+    CreateCacheEntryExpiryCalculator();
 
   [When("I check is cache entry expired")]
   public void WhenICheckIsCacheEntryExpired() =>
-    _isExpired = _sut.IsCacheEntryExpired(_expiresAt);
+    _isExpired = _cachesContext.ExpiryCalculator.IsCacheEntryExpired(_expiresAt);
 
   [When("I calculate expiration time")]
   public void WhenICalculateExpirationTime() =>
-    _calculatedExpiration = _sut.CalculateExpiration(_absoluteExpiration, _slidingExpiration);
+    _calculatedExpiration = _cachesContext.ExpiryCalculator.CalculateExpiration(_absoluteExpiration, _slidingExpiration);
 
   [When("I calculate absolute expiration time")]
   public void WhenICalculateAbsoluteExpirationTime() {
     try {
-      _calculatedAbsoluteExpiration = _sut.CalculateAbsoluteExpiration(_absoluteExpiration, _relativeExpiration);
+      _calculatedAbsoluteExpiration = _cachesContext.ExpiryCalculator.CalculateAbsoluteExpiration(_absoluteExpiration, _relativeExpiration);
     }
     catch (Exception exception) {
       _errorHandlingContext.LastException = exception;
@@ -84,12 +74,23 @@ public class CacheEntryExpiryCalculatorSteps {
     _isExpired.Should().BeTrue();
 
   [Then("calculated absolute expiration time should be today at (.*)")]
-  public void ThenCalculatedAbsoluteExpirationTimeShouldBe(TimeSpan absoluteExpiration) =>
+  public void ThenCalculatedAbsoluteExpirationTimeShouldBeTodayAt(TimeSpan absoluteExpiration) =>
     _calculatedAbsoluteExpiration.Should().Be(_cachesContext.Today.Add(absoluteExpiration));
 
   [Then("calculated absolute expiration time should be null")]
   public void ThenCalculatedAbsoluteExpirationTimeShouldBeNull() =>
     _calculatedAbsoluteExpiration.Should().BeNull();
+
+  private void CreateCacheEntryExpiryCalculator() {
+    try {
+      _cachesContext.ExpiryCalculator = new CacheEntryExpiryCalculator(
+        _cachesContext.DefaultSlidingExpirationInterval,
+        _cachesContext.TimeProvider);
+    }
+    catch (Exception exception) {
+      _errorHandlingContext.LastException = exception;
+    }
+  }
 
   private readonly CachesContext _cachesContext;
   private readonly ErrorHandlingContext _errorHandlingContext;
@@ -100,5 +101,4 @@ public class CacheEntryExpiryCalculatorSteps {
   private DateTimeOffset? _calculatedAbsoluteExpiration;
   private DateTimeOffset _expiresAt;
   private bool _isExpired;
-  private CacheEntryExpiryCalculator _sut = null!;
 }

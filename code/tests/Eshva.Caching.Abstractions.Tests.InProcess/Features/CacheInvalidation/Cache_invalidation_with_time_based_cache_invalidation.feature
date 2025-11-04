@@ -1,9 +1,9 @@
 ﻿Feature: Cache invalidation with time-based cache invalidation
 
   Background:
-    Given minimal expired entries purging interval is 2 minutes
-    And purging interval is 6 minutes
+    Given purging interval is 6 minutes
     And default sliding expiration interval is 1 minutes
+    And cache entry expiry calculator with defined arguments
     And time-based cache invalidation with defined arguments
 
   Scenario: 01. Purging should start on time

@@ -12,10 +12,6 @@ public class CommonCacheSteps {
   public void GivenClockSetAtToday(TimeSpan timeOfDay) =>
     _cachesContext.TimeProvider.AdjustTime(_cachesContext.Today + timeOfDay);
 
-  [Given("minimal expired entries purging interval is {double} minutes")]
-  public void GivenMinimalExpiredEntriesPurgingIntervalIsDoubleMinutes(double minutes) =>
-    _cachesContext.MinimalPurgingInterval = TimeSpan.FromMinutes(minutes);
-
   [Given("purging interval is {double} minutes")]
   public void GivenPurgingIntervalIsDoubleMinutes(double purgingInterval) =>
     _cachesContext.PurgingInterval = TimeSpan.FromMinutes(purgingInterval);
@@ -31,6 +27,14 @@ public class CommonCacheSteps {
   [Given("time provider is not specified")]
   public void GivenTimeProviderIsNotSpecified() =>
     _cachesContext.TimeProvider = null!;
+
+  [Given("cache entry expiry calculator with defined arguments")]
+  public void GivenCacheEntryExpiryCalculatorWithDefinedArguments() => _cachesContext.ExpiryCalculator =
+    new CacheEntryExpiryCalculator(_cachesContext.DefaultSlidingExpirationInterval, _cachesContext.TimeProvider);
+
+  [Given("cache entry expiry calculator is not specified")]
+  public void GivenCacheEntryExpiryCalculatorIsNotSpecified() =>
+    _cachesContext.ExpiryCalculator = null!;
 
   private readonly CachesContext _cachesContext;
 }

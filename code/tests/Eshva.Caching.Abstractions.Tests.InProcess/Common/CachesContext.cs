@@ -26,7 +26,7 @@ public class CachesContext {
 
   public TimeSpan DefaultSlidingExpirationInterval { get; set; }
 
-  public TimeSpan MinimalPurgingInterval { get; set; }
-
   public FakeTimeProvider TimeProvider { get; set; }
+
+  public CacheEntryExpiryCalculator ExpiryCalculator { get; set; } = null!;
 }

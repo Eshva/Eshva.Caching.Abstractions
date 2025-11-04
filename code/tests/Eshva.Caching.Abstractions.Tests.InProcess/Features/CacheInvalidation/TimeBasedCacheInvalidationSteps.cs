@@ -16,19 +16,11 @@ public class TimeBasedCacheInvalidationSteps {
 
   [Given("time-based cache invalidation with defined arguments")]
   public void GivenTimeBasedCacheInvalidationWithDefinedArguments() =>
-    WhenIConstructTimeBasedCacheInvalidationWithDefinedArguments();
+    CreateTimeBasedCacheInvalidation();
 
   [When("I construct time-based cache invalidation with defined arguments")]
   public void WhenIConstructTimeBasedCacheInvalidationWithDefinedArguments() =>
-    CreateTimeBasedCacheInvalidation(
-      new TimeBasedCacheInvalidationSettings {
-        DefaultSlidingExpirationInterval = _cachesContext.DefaultSlidingExpirationInterval,
-        ExpiredEntriesPurgingInterval = _cachesContext.PurgingInterval
-      });
-
-  [When("I construct time-based cache invalidation with settings not specified")]
-  public void WhenIConstructTimeBasedCacheInvalidationWithSettingsNotSpecified() =>
-    CreateTimeBasedCacheInvalidation(settings: null);
+    CreateTimeBasedCacheInvalidation();
 
   [When("I request cache invalidation")]
   public void WhenIRequestCacheInvalidation() {
@@ -62,11 +54,11 @@ public class TimeBasedCacheInvalidationSteps {
   public void ThenOnlyOnePurgingShouldBeDone() =>
     _sut.NumberOfPurgeStarted.Should().Be(expected: 1);
 
-  private void CreateTimeBasedCacheInvalidation(TimeBasedCacheInvalidationSettings? settings) {
+  private void CreateTimeBasedCacheInvalidation() {
     try {
       _sut = new TestCacheInvalidation(
-        _cachesContext.MinimalPurgingInterval,
-        settings!,
+        _cachesContext.PurgingInterval,
+        _cachesContext.ExpiryCalculator,
         _cachesContext.TimeProvider,
         XUnitLogger.CreateLogger<TestCacheInvalidation>(_cachesContext.XUnitLogger),
         _purgingSignal);
@@ -83,14 +75,14 @@ public class TimeBasedCacheInvalidationSteps {
 
   private sealed class TestCacheInvalidation : TimeBasedCacheInvalidation {
     public TestCacheInvalidation(
-      TimeSpan minimalExpiredEntriesPurgingInterval,
-      TimeBasedCacheInvalidationSettings settings,
+      TimeSpan expiredEntriesPurgingInterval,
+      CacheEntryExpiryCalculator expiryCalculator,
       TimeProvider timeProvider,
       ILogger logger,
       ManualResetEventSlim purgingSignal)
       : base(
-        settings,
-        minimalExpiredEntriesPurgingInterval,
+        expiredEntriesPurgingInterval,
+        expiryCalculator,
         timeProvider,
         logger) {
       _purgingSignal = purgingSignal;

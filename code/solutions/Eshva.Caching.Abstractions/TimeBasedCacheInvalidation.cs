@@ -16,35 +16,22 @@ public abstract class TimeBasedCacheInvalidation : ICacheInvalidation, ICacheInv
   /// <summary>
   /// Initializes a new instance of a time-based cache invalidation.
   /// </summary>
-  /// <param name="settings">Time-based cache invalidation settings.</param>
-  /// <param name="minimalExpiredEntriesPurgingInterval">Minimal purging interval allowed.</param>
+  /// <param name="expiredEntriesPurgingInterval">Expired entries purging interval.</param>
+  /// <param name="expiryCalculator">Cache entry expiry calculator.</param>
   /// <param name="timeProvider">Time provider.</param>
   /// <param name="logger">Logger.</param>
   /// <exception cref="ArgumentNullException">
   /// Value of a required parameter isn't specified.
   /// </exception>
-  /// <exception cref="ArgumentOutOfRangeException">
-  /// <paramref name="settings"/>.ExpiredEntriesPurgingInterval is less than
-  /// <paramref name="minimalExpiredEntriesPurgingInterval"/>.
-  /// </exception>
   protected TimeBasedCacheInvalidation(
-    TimeBasedCacheInvalidationSettings settings,
-    TimeSpan minimalExpiredEntriesPurgingInterval,
+    TimeSpan expiredEntriesPurgingInterval,
+    CacheEntryExpiryCalculator expiryCalculator,
     TimeProvider timeProvider,
     ILogger? logger = null) {
-    if (settings is null) throw new ArgumentNullException(nameof(settings));
-
-    if (settings.ExpiredEntriesPurgingInterval < minimalExpiredEntriesPurgingInterval) {
-      throw new ArgumentOutOfRangeException(
-        nameof(settings),
-        $"Expired entries purging interval {settings.ExpiredEntriesPurgingInterval} is less "
-        + $"than minimal allowed value {minimalExpiredEntriesPurgingInterval}.");
-    }
-
-    _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+    _expiredEntriesPurgingInterval = expiredEntriesPurgingInterval;
+    ExpiryCalculator = expiryCalculator ?? throw new ArgumentNullException(nameof(expiryCalculator));
     _timeProvider = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
     Logger = logger ?? new NullLogger<TimeBasedCacheInvalidation>();
-    ExpiryCalculator = new CacheEntryExpiryCalculator(settings.DefaultSlidingExpirationInterval, timeProvider);
     _cacheInvalidatedAt = _timeProvider.GetUtcNow();
   }
 
@@ -127,22 +114,22 @@ public abstract class TimeBasedCacheInvalidation : ICacheInvalidation, ICacheInv
   private bool ShouldPurgeEntries() {
     var utcNow = _timeProvider.GetUtcNow();
     var timePassedSinceTheLastPurging = utcNow - _cacheInvalidatedAt;
-    if (timePassedSinceTheLastPurging < _settings.ExpiredEntriesPurgingInterval) {
+    if (timePassedSinceTheLastPurging < _expiredEntriesPurgingInterval) {
       Logger.LogDebug(
         "Since the last cache invalidation {TimePassed} has passed that is less than {PurgingInterval}. Purging is not required",
         timePassedSinceTheLastPurging,
-        _settings.ExpiredEntriesPurgingInterval);
+        _expiredEntriesPurgingInterval);
       return false;
     }
 
     Logger.LogDebug(
       "Since the last cache invalidation {TimePassed} has passed that is greeter than or equals to {PurgingInterval}. Purging is required",
       timePassedSinceTheLastPurging,
-      _settings.ExpiredEntriesPurgingInterval);
+      _expiredEntriesPurgingInterval);
     return true;
   }
 
-  private readonly TimeBasedCacheInvalidationSettings _settings;
+  private readonly TimeSpan _expiredEntriesPurgingInterval;
   private readonly TimeProvider _timeProvider;
   private DateTimeOffset _cacheInvalidatedAt;
   private int _isPurgingInProgress;

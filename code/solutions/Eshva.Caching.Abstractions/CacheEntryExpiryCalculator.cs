@@ -50,8 +50,7 @@ public sealed class CacheEntryExpiryCalculator {
   /// expiration happens earlier than sliding returns <paramref name="absoluteExpirationUtc"/>.
   /// </item>
   /// <item>
-  /// If both arguments not provided returns current UTC-time plus
-  /// <see cref="TimeBasedCacheInvalidationSettings.DefaultSlidingExpirationInterval"/> value.
+  /// If both arguments not provided returns current UTC-time advanced with default sliding expiration interval.
   /// </item>
   /// <item>Otherwise returns current UTC-time plus <paramref name="slidingExpiration"/> value.</item>
   /// </list>

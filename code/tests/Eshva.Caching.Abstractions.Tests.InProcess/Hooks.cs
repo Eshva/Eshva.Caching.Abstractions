@@ -1,8 +1,8 @@
-﻿using Eshva.Caching.Abstractions.BehaviorTests.Common;
+﻿using Eshva.Caching.Abstractions.Tests.InProcess.Common;
 using Reqnroll;
 using Xunit.Abstractions;
 
-namespace Eshva.Caching.Abstractions.BehaviorTests;
+namespace Eshva.Caching.Abstractions.Tests.InProcess;
 
 [Binding]
 public sealed class Hooks {

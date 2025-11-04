@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Time.Testing;
 using Xunit.Abstractions;
 
-namespace Eshva.Caching.Abstractions.BehaviorTests.Common;
+namespace Eshva.Caching.Abstractions.Tests.InProcess.Common;
 
 public class CachesContext {
   public CachesContext(ITestOutputHelper xUnitLogger) {

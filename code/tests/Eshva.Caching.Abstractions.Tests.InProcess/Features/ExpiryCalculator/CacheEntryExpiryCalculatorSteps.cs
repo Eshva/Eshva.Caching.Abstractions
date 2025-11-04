@@ -1,8 +1,8 @@
-﻿using Eshva.Caching.Abstractions.BehaviorTests.Common;
+﻿using Eshva.Caching.Abstractions.Tests.InProcess.Common;
 using FluentAssertions;
 using Reqnroll;
 
-namespace Eshva.Caching.Abstractions.BehaviorTests.Features.ExpiryCalculator;
+namespace Eshva.Caching.Abstractions.Tests.InProcess.Features.ExpiryCalculator;
 
 [Binding]
 public class CacheEntryExpiryCalculatorSteps {

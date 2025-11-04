@@ -1,10 +1,10 @@
-﻿using Eshva.Caching.Abstractions.BehaviorTests.Common;
+﻿using Eshva.Caching.Abstractions.Tests.InProcess.Common;
 using FluentAssertions;
 using Meziantou.Extensions.Logging.Xunit;
 using Microsoft.Extensions.Logging;
 using Reqnroll;
 
-namespace Eshva.Caching.Abstractions.BehaviorTests.Features.CacheInvalidation;
+namespace Eshva.Caching.Abstractions.Tests.InProcess.Features.CacheInvalidation;
 
 [Binding]
 public class TimeBasedCacheInvalidationSteps {

@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Reqnroll;
 
-namespace Eshva.Caching.Abstractions.BehaviorTests.Common;
+namespace Eshva.Caching.Abstractions.Tests.InProcess.Common;
 
 [Binding]
 public class ErrorHandlingSteps {

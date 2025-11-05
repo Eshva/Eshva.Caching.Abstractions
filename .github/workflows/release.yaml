@@ -65,7 +65,7 @@ jobs:
           action_fail: true
   build-and-publish:
     name: Build the NuGet-package and publish it to nuget.org
-    needs: [verify-quality, publish-test-results]
+    needs: [ verify-quality, publish-test-results ]
     permissions:
       contents: read
       id-token: write

@@ -7,19 +7,19 @@
     And time-based cache invalidation with defined arguments
 
   Scenario: 01. Purging should start on time
-    Given time passed by 6 minutes
+    Given time passed by 00:06:00
     When I request cache invalidation
     Then purging is successfully done
     And no errors are reported
 
   Scenario: 02. Purging should not start if time has not yet come
-    Given time passed by 5 minutes
+    Given time passed by 00:05:59
     When I request cache invalidation
     Then purging is not started
     And no errors are reported
 
   Scenario: 03. Only one out of a few concurrent purging should be executed
-    Given time passed by 6 minutes
+    Given time passed by 00:06:00
     When a few cache invalidations requested
     Then purging is successfully done
     And no errors are reported

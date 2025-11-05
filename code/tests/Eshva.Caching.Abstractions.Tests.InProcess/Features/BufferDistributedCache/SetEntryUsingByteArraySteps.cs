@@ -1,0 +1,165 @@
+﻿using System.Text;
+using Eshva.Caching.Abstractions.Tests.InProcess.Common;
+using Microsoft.Extensions.Caching.Distributed;
+using Reqnroll;
+
+namespace Eshva.Caching.Abstractions.Tests.InProcess.Features.BufferDistributedCache;
+
+[Binding]
+internal class SetEntryUsingByteArraySteps {
+  public SetEntryUsingByteArraySteps(CachesContext cachesContext, ErrorHandlingContext errorHandlingContext) {
+    _cachesContext = cachesContext;
+    _errorHandlingContext = errorHandlingContext;
+  }
+
+  [When(
+    "I set using byte array asynchronously '(.*)' cache entry with value '(.*)' and sliding expiration in (.*) minutes",
+    ExpressionType = ExpressionType.RegularExpression)]
+  public async Task WhenISetUsingByteArrayAsynchronouslyCacheEntryWithValueAndSlidingExpirationInMinutes(
+    string key,
+    string value,
+    int minutes) {
+    try {
+      await _cachesContext.Cache.SetAsync(
+        key,
+        Encoding.UTF8.GetBytes(value),
+        new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(minutes) });
+    }
+    catch (Exception exception) {
+      _errorHandlingContext.LastException = exception;
+    }
+  }
+
+  [When(
+    "I set using byte array synchronously '(.*)' cache entry with value '(.*)' and sliding expiration in (.*) minutes",
+    ExpressionType = ExpressionType.RegularExpression)]
+  public void WhenISetUsingByteArraySynchronouslyCacheEntryWithValueAndSlidingExpirationInMinutes(string key, string value, int minutes) {
+    try {
+      _cachesContext.Cache.Set(
+        key,
+        Encoding.UTF8.GetBytes(value),
+        new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(minutes) });
+    }
+    catch (Exception exception) {
+      _errorHandlingContext.LastException = exception;
+    }
+  }
+
+  [When(
+    @"I set using byte array asynchronously '(.*)' cache entry with value '(.*)' and absolute expiration at today at (\b\d\d:\d\d:\d\d\b)",
+    ExpressionType = ExpressionType.RegularExpression)]
+  public async Task WhenISetUsingByteArrayAsynchronouslyCacheEntryWithValueAndAbsoluteExpirationAtTodayAtDd(
+    string key,
+    string value,
+    TimeSpan timeOfDay) {
+    try {
+      await _cachesContext.Cache.SetAsync(
+        key,
+        Encoding.UTF8.GetBytes(value),
+        new DistributedCacheEntryOptions { AbsoluteExpiration = _cachesContext.Today.Add(timeOfDay) });
+    }
+    catch (Exception exception) {
+      _errorHandlingContext.LastException = exception;
+    }
+  }
+
+  [When(
+    @"I set using byte array asynchronously '(.*)' cache entry with value '(.*)' and absolute expiration at today at (\b\d\d:\d\d:\d\d\b) and sliding expiration in (.*) minutes",
+    ExpressionType = ExpressionType.RegularExpression)]
+  public async Task WhenISetUsingByteArrayAsynchronouslyCacheEntryWithValueAndAbsoluteExpirationAtTodayAtDdAndSlidingExpirationInMinutes(
+    string key,
+    string value,
+    TimeSpan timeOfDay,
+    int minutes) {
+    try {
+      await _cachesContext.Cache.SetAsync(
+        key,
+        Encoding.UTF8.GetBytes(value),
+        new DistributedCacheEntryOptions {
+          AbsoluteExpiration = _cachesContext.Today.Add(timeOfDay), SlidingExpiration = TimeSpan.FromMinutes(minutes)
+        });
+    }
+    catch (Exception exception) {
+      _errorHandlingContext.LastException = exception;
+    }
+  }
+
+  [When(
+    @"I set using byte array synchronously '(.*)' cache entry with value '(.*)' and absolute expiration at today at (\b\d\d:\d\d:\d\d\b) and sliding expiration in (.*) minutes",
+    ExpressionType = ExpressionType.RegularExpression)]
+  public async Task WhenISetUsingByteArraySynchronouslyCacheEntryWithValueAndAbsoluteExpirationAtTodayAtDdAndSlidingExpirationInMinutes(
+    string key,
+    string value,
+    TimeSpan timeOfDay,
+    int minutes) {
+    try {
+      await _cachesContext.Cache.SetAsync(
+        key,
+        Encoding.UTF8.GetBytes(value),
+        new DistributedCacheEntryOptions {
+          AbsoluteExpiration = _cachesContext.Today.Add(timeOfDay), SlidingExpiration = TimeSpan.FromMinutes(minutes)
+        });
+    }
+    catch (Exception exception) {
+      _errorHandlingContext.LastException = exception;
+    }
+  }
+
+  [When(
+    @"I set using byte array synchronously '(.*)' cache entry with value '(.*)' and absolute expiration at today at (\b\d\d:\d\d:\d\d\b)",
+    ExpressionType = ExpressionType.RegularExpression)]
+  public void WhenISetUsingByteArraySynchronouslyCacheEntryWithValueAndAbsoluteExpirationAtTodayAtDd(
+    string key,
+    string value,
+    TimeSpan timeOfDay) {
+    try {
+      _cachesContext.Cache.Set(
+        key,
+        Encoding.UTF8.GetBytes(value),
+        new DistributedCacheEntryOptions { AbsoluteExpiration = _cachesContext.Today.Add(timeOfDay) });
+    }
+    catch (Exception exception) {
+      _errorHandlingContext.LastException = exception;
+    }
+  }
+
+  [When(
+    @"I set using byte array asynchronously '(.*)' cache entry with value '(.*)' and absolute expiration (\b\d\d:\d\d:\d\d\b) relative to now",
+    ExpressionType = ExpressionType.RegularExpression)]
+  public async Task
+    WhenISetUsingByteArrayAsynchronouslyCacheEntryWithValueAndAbsoluteExpirationRelativeToNow(
+      string key,
+      string value,
+      TimeSpan timeOfDay) {
+    try {
+      await _cachesContext.Cache.SetAsync(
+        key,
+        Encoding.UTF8.GetBytes(value),
+        new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = timeOfDay });
+    }
+    catch (Exception exception) {
+      _errorHandlingContext.LastException = exception;
+    }
+  }
+
+  [When(
+    @"I set using byte array synchronously '(.*)' cache entry with value '(.*)' and absolute expiration (\b\d\d:\d\d:\d\d\b) relative to now",
+    ExpressionType = ExpressionType.RegularExpression)]
+  public void WhenISetUsingByteArraySynchronouslyCacheEntryWithValueAndAbsoluteExpirationRelativeToNow(
+    string key,
+    string value,
+    TimeSpan timeOfDay) {
+    try {
+      _cachesContext.Cache.Set(
+        key,
+        Encoding.UTF8.GetBytes(value),
+        new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = timeOfDay });
+    }
+    catch (Exception exception) {
+      _errorHandlingContext.LastException = exception;
+    }
+  }
+
+  private readonly CachesContext _cachesContext;
+  private readonly ErrorHandlingContext _errorHandlingContext;
+}

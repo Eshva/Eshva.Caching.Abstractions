@@ -25,6 +25,7 @@
     <None Include="../../../documentation/cache-abstractions-128.png" Pack="true" PackagePath="/"/>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.HighPerformance"/>
     <PackageReference Include="JetBrains.Annotations"/>
     <PackageReference Include="Microsoft.Bcl.TimeProvider"/>
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions"/>

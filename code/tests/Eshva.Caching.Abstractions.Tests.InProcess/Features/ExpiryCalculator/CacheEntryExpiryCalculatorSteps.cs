@@ -5,7 +5,7 @@ using Reqnroll;
 namespace Eshva.Caching.Abstractions.Tests.InProcess.Features.ExpiryCalculator;
 
 [Binding]
-public class CacheEntryExpiryCalculatorSteps {
+internal class CacheEntryExpiryCalculatorSteps {
   public CacheEntryExpiryCalculatorSteps(CachesContext cachesContext, ErrorHandlingContext errorHandlingContext) {
     _cachesContext = cachesContext;
     _errorHandlingContext = errorHandlingContext;
@@ -19,7 +19,9 @@ public class CacheEntryExpiryCalculatorSteps {
   public void GivenNoSlidingExpirationTime() =>
     _slidingExpiration = null;
 
-  [Given("cache entry that expires today at (.*)")]
+  [Given(
+    @"cache entry that expires today at (\b\d\d:\d\d:\d\d\b)",
+    ExpressionType = ExpressionType.RegularExpression)]
   public void GivenCacheEntryThatExpiresTodayAt(TimeSpan expiresAt) =>
     _expiresAt = _cachesContext.Today.Add(expiresAt);
 
@@ -27,7 +29,9 @@ public class CacheEntryExpiryCalculatorSteps {
   public void GivenSlidingExpirationInIntMinutes(int minutes) =>
     _slidingExpiration = TimeSpan.FromMinutes(minutes);
 
-  [Given("absolute expiration today at (.*)")]
+  [Given(
+    @"absolute expiration today at (\b\d\d:\d\d:\d\d\b)",
+    ExpressionType = ExpressionType.RegularExpression)]
   public void GivenAbsoluteExpirationTodayAt(TimeSpan absoluteExpirationTime) =>
     _absoluteExpiration = _cachesContext.Today.Add(absoluteExpirationTime);
 
@@ -61,7 +65,9 @@ public class CacheEntryExpiryCalculatorSteps {
     }
   }
 
-  [Then("calculated expiration time should be today at (.*)")]
+  [Then(
+    @"calculated expiration time should be today at (\b\d\d:\d\d:\d\d\b)",
+    ExpressionType = ExpressionType.RegularExpression)]
   public void ThenCalculatedExpirationTimeShouldBeTodayAt(TimeSpan expirationTime) =>
     _calculatedExpiration.Should().Be(_cachesContext.Today.Add(expirationTime));
 
@@ -73,7 +79,9 @@ public class CacheEntryExpiryCalculatorSteps {
   public void ThenItShouldBeExpired() =>
     _isExpired.Should().BeTrue();
 
-  [Then("calculated absolute expiration time should be today at (.*)")]
+  [Then(
+    @"calculated absolute expiration time should be today at (\b\d\d:\d\d:\d\d\b)",
+    ExpressionType = ExpressionType.RegularExpression)]
   public void ThenCalculatedAbsoluteExpirationTimeShouldBeTodayAt(TimeSpan absoluteExpiration) =>
     _calculatedAbsoluteExpiration.Should().Be(_cachesContext.Today.Add(absoluteExpiration));
 

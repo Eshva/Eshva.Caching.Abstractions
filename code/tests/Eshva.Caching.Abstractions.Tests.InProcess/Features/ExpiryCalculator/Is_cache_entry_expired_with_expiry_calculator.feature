@@ -1,7 +1,7 @@
 ﻿Feature: Is cache entry expired with expiry calculator
 
   Background:
-    Given clock set at today 20:00
+    Given clock set at today 20:00:00
     And default sliding expiration interval is 1 minutes
     And purging interval is 6 minutes
     And cache entry expiry calculator with defined arguments

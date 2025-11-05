@@ -1,13 +1,12 @@
 ﻿using Eshva.Caching.Abstractions.Tests.InProcess.Common;
 using FluentAssertions;
 using Meziantou.Extensions.Logging.Xunit;
-using Microsoft.Extensions.Logging;
 using Reqnroll;
 
 namespace Eshva.Caching.Abstractions.Tests.InProcess.Features.CacheInvalidation;
 
 [Binding]
-public class TimeBasedCacheInvalidationSteps {
+internal class TimeBasedCacheInvalidationSteps {
   public TimeBasedCacheInvalidationSteps(CachesContext cachesContext, ErrorHandlingContext errorHandlingContext) {
     _cachesContext = cachesContext;
     _errorHandlingContext = errorHandlingContext;
@@ -72,31 +71,4 @@ public class TimeBasedCacheInvalidationSteps {
   private readonly ErrorHandlingContext _errorHandlingContext;
   private readonly ManualResetEventSlim _purgingSignal;
   private TestCacheInvalidation _sut = null!;
-
-  private sealed class TestCacheInvalidation : TimeBasedCacheInvalidation {
-    public TestCacheInvalidation(
-      TimeSpan expiredEntriesPurgingInterval,
-      CacheEntryExpiryCalculator expiryCalculator,
-      TimeProvider timeProvider,
-      ILogger logger,
-      ManualResetEventSlim purgingSignal)
-      : base(
-        expiredEntriesPurgingInterval,
-        expiryCalculator,
-        timeProvider,
-        logger) {
-      _purgingSignal = purgingSignal;
-    }
-
-    public int NumberOfPurgeStarted { get; private set; }
-
-    protected override Task<CacheInvalidationStatistics> DeleteExpiredCacheEntries(CancellationToken token) {
-      Logger.LogDebug("Thread ID: {TreadId}", Environment.CurrentManagedThreadId);
-      NumberOfPurgeStarted++;
-      _purgingSignal.Set();
-      return Task.FromResult(new CacheInvalidationStatistics());
-    }
-
-    private readonly ManualResetEventSlim _purgingSignal;
-  }
 }

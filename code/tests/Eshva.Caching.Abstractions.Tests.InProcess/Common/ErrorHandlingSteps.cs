@@ -20,5 +20,9 @@ public class ErrorHandlingSteps {
   public void ThenArgumentOutOfRangeExceptionShouldBeReported() =>
     _errorHandlingContext.LastException.Should().NotBeNull().And.BeOfType<ArgumentOutOfRangeException>();
 
+  [Then("invalid operation exception should be reported")]
+  public void ThenInvalidOperationExceptionShouldBeReported() =>
+    _errorHandlingContext.LastException.Should().NotBeNull().And.BeOfType<InvalidOperationException>();
+
   private readonly ErrorHandlingContext _errorHandlingContext;
 }

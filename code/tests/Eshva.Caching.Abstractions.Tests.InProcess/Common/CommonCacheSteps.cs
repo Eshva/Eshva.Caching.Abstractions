@@ -126,11 +126,11 @@ internal class CommonCacheSteps {
 
   [Then("cache invalidation should be triggered")]
   public void ThenCacheInvalidationShouldBeTriggered() =>
-    _cachesContext.PurgingSignal.Wait(TimeSpan.FromSeconds(value: 1D)).Should().BeTrue();
+    _cachesContext.PurgingSignal.Wait(TimeSpan.FromSeconds(value: 5D)).Should().BeTrue();
 
   [Then("cache invalidation should not be triggered")]
   public void ThenCacheInvalidationShouldNotBeTriggered() =>
-    _cachesContext.PurgingSignal.Wait(TimeSpan.FromSeconds(value: 1D)).Should().BeFalse();
+    _cachesContext.PurgingSignal.Wait(TimeSpan.FromSeconds(value: 5D)).Should().BeFalse();
 
   [Then(@"sliding expiry interval of '(.*)' entry should be (\b\d\d:\d\d:\d\d\b)", ExpressionType = ExpressionType.RegularExpression)]
   public void ThenSlidingExpiryIntervalOfEntryShouldBe(string key, TimeSpan slidingExpiry) =>

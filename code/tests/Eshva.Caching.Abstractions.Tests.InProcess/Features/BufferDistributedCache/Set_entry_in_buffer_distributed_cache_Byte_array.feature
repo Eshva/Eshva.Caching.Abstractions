@@ -126,3 +126,15 @@
     And 'present' entry should be expired today at 00:25:00
     And sliding expiry interval of 'present' entry should be null
     And absolute expiry of 'present' entry should be today at 00:25:00
+
+  Scenario: 17. Set a cache entry should trigger cache invalidation if its interval has passed
+    Given time passed by 00:03:00
+    When I set using byte array asynchronously 'new' cache entry with value 'some value' and sliding expiration in 5 minutes
+    Then no errors are reported
+    And cache invalidation should be triggered
+
+  Scenario: 18. Set a cache entry should not trigger cache invalidation if its interval has not passed
+    Given time passed by 00:02:59
+    When I set using byte array asynchronously 'new' cache entry with value 'some value' and sliding expiration in 5 minutes
+    Then no errors are reported
+    And cache invalidation should not be triggered

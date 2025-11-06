@@ -64,7 +64,7 @@ public abstract class TimeBasedCacheInvalidation : ICacheInvalidation, ICacheInv
 
     try {
       _cacheInvalidatedAt = _timeProvider.GetUtcNow();
-      _ = Task.Run(() => DeleteExpiredCacheEntries(token), token);
+      _ = Task.Run(() => InvalidateCache(token), token);
     }
     finally {
       Interlocked.Exchange(ref _isPurgingInProgress, notYetPurging);

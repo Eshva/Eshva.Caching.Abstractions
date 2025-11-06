@@ -11,6 +11,8 @@
     When I request cache invalidation
     Then purging is successfully done
     And no errors are reported
+    And purging started event risen once
+    And purging completed event risen once
 
   Scenario: 02. Purging should not start if time has not yet come
     Given time passed by 00:05:59

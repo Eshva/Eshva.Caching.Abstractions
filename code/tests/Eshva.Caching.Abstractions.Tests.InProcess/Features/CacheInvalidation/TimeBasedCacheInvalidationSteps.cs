@@ -53,6 +53,14 @@ internal class TimeBasedCacheInvalidationSteps {
   public void ThenOnlyOnePurgingShouldBeDone() =>
     _sut.NumberOfPurgeStarted.Should().Be(expected: 1);
 
+  [Then("purging started event risen once")]
+  public void ThenPurgingStartedEventRisenOnce() =>
+    _purgingStartedCount.Should().Be(expected: 1);
+
+  [Then("purging completed event risen once")]
+  public void ThenPurgingCompletedEventRisenOnce() =>
+    _purgingCompletedCount.Should().Be(expected: 1);
+
   private void CreateTimeBasedCacheInvalidation() {
     try {
       _sut = new TestCacheInvalidation(
@@ -61,6 +69,8 @@ internal class TimeBasedCacheInvalidationSteps {
         _cachesContext.TimeProvider,
         XUnitLogger.CreateLogger<TestCacheInvalidation>(_cachesContext.XUnitLogger),
         _purgingSignal);
+      _sut.CacheInvalidationStarted += (_, _) => _purgingStartedCount++;
+      _sut.CacheInvalidationCompleted += (_, _) => _purgingCompletedCount++;
     }
     catch (Exception exception) {
       _errorHandlingContext.LastException = exception;
@@ -70,5 +80,8 @@ internal class TimeBasedCacheInvalidationSteps {
   private readonly CachesContext _cachesContext;
   private readonly ErrorHandlingContext _errorHandlingContext;
   private readonly ManualResetEventSlim _purgingSignal;
+
+  private int _purgingCompletedCount;
+  private int _purgingStartedCount;
   private TestCacheInvalidation _sut = null!;
 }

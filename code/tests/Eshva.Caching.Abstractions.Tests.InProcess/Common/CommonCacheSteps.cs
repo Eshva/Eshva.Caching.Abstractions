@@ -149,8 +149,8 @@ internal class CommonCacheSteps {
     _cachesContext.CacheDatastore.GetExpiry(key).AbsoluteExpiryAtUtc.Should().BeNull();
 
   private byte[] MakeBigValue() {
-    const int maxBufferSize = 1 * 1024 * 1024;
-    var bigValue = new byte[maxBufferSize];
+    const int bufferSize = 1 * 1024 * 1024;
+    var bigValue = new byte[bufferSize];
     var random = new Random();
     random.NextBytes(_originalValue);
     return bigValue;

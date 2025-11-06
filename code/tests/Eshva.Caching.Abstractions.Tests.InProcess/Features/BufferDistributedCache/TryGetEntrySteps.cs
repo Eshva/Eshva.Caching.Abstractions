@@ -1,7 +1,6 @@
-﻿using System.Buffers;
-using CommunityToolkit.HighPerformance.Buffers;
-using Eshva.Caching.Abstractions.Tests.InProcess.Common;
+﻿using Eshva.Caching.Abstractions.Tests.InProcess.Common;
 using FluentAssertions;
+using Microsoft.IO;
 using Reqnroll;
 
 namespace Eshva.Caching.Abstractions.Tests.InProcess.Features.BufferDistributedCache;
@@ -16,10 +15,9 @@ internal class TryGetEntrySteps {
   [When("I try get '(.*)' cache entry asynchronously")]
   public async Task WhenITryGetCacheEntryAsynchronously(string key) {
     try {
-      using var memoryOwner = MemoryPool<byte>.Shared.Rent(_cachesContext.MaxBufferSize);
-      var destination = new MemoryBufferWriter<byte>(memoryOwner.Memory);
+      using var destination = StreamManager.GetStream();
       _isSuccessfullyRead = await _cachesContext.Cache.TryGetAsync(key, destination);
-      _cachesContext.GottenCacheEntryValue = destination.WrittenMemory.ToArray();
+      _cachesContext.GottenCacheEntryValue = destination.ToArray();
     }
     catch (Exception exception) {
       _errorHandlingContext.LastException = exception;
@@ -29,10 +27,9 @@ internal class TryGetEntrySteps {
   [When("I try get '(.*)' cache entry synchronously")]
   public void WhenITryGetCacheEntrySynchronously(string key) {
     try {
-      using var memoryOwner = MemoryPool<byte>.Shared.Rent();
-      var destination = new MemoryBufferWriter<byte>(memoryOwner.Memory);
+      using var destination = StreamManager.GetStream();
       _isSuccessfullyRead = _cachesContext.Cache.TryGet(key, destination);
-      _cachesContext.GottenCacheEntryValue = destination.WrittenMemory.ToArray();
+      _cachesContext.GottenCacheEntryValue = destination.ToArray();
     }
     catch (Exception exception) {
       _errorHandlingContext.LastException = exception;
@@ -48,4 +45,5 @@ internal class TryGetEntrySteps {
   private readonly CachesContext _cachesContext;
   private readonly ErrorHandlingContext _errorHandlingContext;
   private bool _isSuccessfullyRead;
+  private static readonly RecyclableMemoryStreamManager StreamManager = new();
 }

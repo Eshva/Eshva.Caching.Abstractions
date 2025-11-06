@@ -30,5 +30,6 @@
     <PackageReference Include="Microsoft.Bcl.TimeProvider"/>
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions"/>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream"/>
   </ItemGroup>
 </Project>

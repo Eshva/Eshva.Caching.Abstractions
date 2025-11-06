@@ -59,6 +59,4 @@ internal class CachesContext {
       CacheDatastore,
       Meziantou.Extensions.Logging.Xunit.XUnitLogger.CreateLogger<TestInMemoryCache>(XUnitLogger));
   }
-
-  public readonly int MaxBufferSize = 1 * 1024 * 1024;
 }

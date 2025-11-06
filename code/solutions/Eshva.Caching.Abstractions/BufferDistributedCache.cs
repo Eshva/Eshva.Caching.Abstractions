@@ -1,8 +1,8 @@
 ﻿using System.Buffers;
-using CommunityToolkit.HighPerformance.Buffers;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.IO;
 
 namespace Eshva.Caching.Abstractions;
 
@@ -88,8 +88,7 @@ public abstract class BufferDistributedCache : IBufferDistributedCache {
     _cacheDatastore.ValidateKey(key);
     _cacheInvalidation.PurgeEntriesIfRequired(token);
 
-    using var memoryOwner = MemoryPool<byte>.Shared.Rent();
-    var destination = new MemoryBufferWriter<byte>(memoryOwner.Memory);
+    using var destination = StreamManager.GetStream();
     var (isEntryGotten, cacheEntryExpiry) =
       await _cacheDatastore.TryGetEntry(key, destination, token).ConfigureAwait(continueOnCapturedContext: false);
     if (!isEntryGotten) return null;
@@ -97,7 +96,7 @@ public abstract class BufferDistributedCache : IBufferDistributedCache {
     await _cacheDatastore.RefreshEntry(key, UpdateCacheEntryExpiry(cacheEntryExpiry), token)
       .ConfigureAwait(continueOnCapturedContext: false);
 
-    return destination.WrittenMemory.ToArray();
+    return destination.ToArray();
   }
 
   /// <summary>
@@ -332,4 +331,5 @@ public abstract class BufferDistributedCache : IBufferDistributedCache {
   private readonly ICacheDatastore _cacheDatastore;
   private readonly TimeBasedCacheInvalidation _cacheInvalidation;
   private readonly ILogger _logger;
+  private static readonly RecyclableMemoryStreamManager StreamManager = new();
 }

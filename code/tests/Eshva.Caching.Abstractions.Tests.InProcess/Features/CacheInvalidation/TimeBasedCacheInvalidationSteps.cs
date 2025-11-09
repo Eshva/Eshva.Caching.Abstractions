@@ -17,19 +17,20 @@ internal class TimeBasedCacheInvalidationSteps {
   public void GivenTimeBasedCacheInvalidationWithDefinedArguments() =>
     CreateTimeBasedCacheInvalidation();
 
+  [Given("cache invalidation requested")]
+  public void GivenCacheInvalidationRequested() =>
+    RequestCacheInvalidation();
+
+  [Given("purging is not started")]
+  public void GivenPurgingIsNotStarted() =>
+    CheckCacheInvalidationNotStarted();
+
   [When("I construct time-based cache invalidation with defined arguments")]
   public void WhenIConstructTimeBasedCacheInvalidationWithDefinedArguments() =>
     CreateTimeBasedCacheInvalidation();
 
   [When("I request cache invalidation")]
-  public void WhenIRequestCacheInvalidation() {
-    try {
-      _sut.PurgeEntriesIfRequired();
-    }
-    catch (Exception exception) {
-      _errorHandlingContext.LastException = exception;
-    }
-  }
+  public void WhenIRequestCacheInvalidation() => RequestCacheInvalidation();
 
   [When("a few cache invalidations requested")]
   public void WhenAFewCacheInvalidationsRequested() {
@@ -47,7 +48,7 @@ internal class TimeBasedCacheInvalidationSteps {
 
   [Then("purging is not started")]
   public void ThenPurgingIsNotStarted() =>
-    _purgingSignal.Wait(TimeSpan.FromSeconds(value: 5D)).Should().BeFalse();
+    CheckCacheInvalidationNotStarted();
 
   [Then("only one purging should be done")]
   public void ThenOnlyOnePurgingShouldBeDone() =>
@@ -60,6 +61,18 @@ internal class TimeBasedCacheInvalidationSteps {
   [Then("purging completed event risen once")]
   public void ThenPurgingCompletedEventRisenOnce() =>
     _purgingCompletedCount.Should().Be(expected: 1);
+
+  private void CheckCacheInvalidationNotStarted() =>
+    _purgingSignal.Wait(TimeSpan.FromSeconds(value: 5D)).Should().BeFalse();
+
+  private void RequestCacheInvalidation() {
+    try {
+      _sut.PurgeEntriesIfRequired();
+    }
+    catch (Exception exception) {
+      _errorHandlingContext.LastException = exception;
+    }
+  }
 
   private void CreateTimeBasedCacheInvalidation() {
     try {

@@ -26,3 +26,12 @@
     Then purging is successfully done
     And no errors are reported
     And only one purging should be done
+
+  Scenario: 04. Early purging should not block purging on time
+    Given time passed by 00:05:59
+    And cache invalidation requested
+    And purging is not started
+    Given time passed by 00:00:01
+    When I request cache invalidation
+    Then purging is successfully done
+    And no errors are reported

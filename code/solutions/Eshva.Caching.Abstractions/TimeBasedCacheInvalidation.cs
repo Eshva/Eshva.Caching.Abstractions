@@ -60,9 +60,9 @@ public abstract class TimeBasedCacheInvalidation : ICacheInvalidation, ICacheInv
       return;
     }
 
-    if (!ShouldPurgeEntries()) return;
-
     try {
+      if (!ShouldPurgeEntries()) return;
+
       _cacheInvalidatedAt = _timeProvider.GetUtcNow();
       _ = Task.Run(() => InvalidateCache(token), token);
     }

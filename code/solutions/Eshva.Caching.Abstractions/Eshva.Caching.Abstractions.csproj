@@ -8,7 +8,7 @@
     <PackageIcon>cache-abstractions-128.png</PackageIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1;net6.0;net7.0;net8.0;net9.0;net462</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net8.0;net9.0;net10.0;net462</TargetFrameworks>
     <RootNamespace>Eshva.Caching.Abstractions</RootNamespace>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

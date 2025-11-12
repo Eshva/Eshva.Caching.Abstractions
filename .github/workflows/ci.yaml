@@ -33,7 +33,6 @@ jobs:
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: ${{ matrix.dotnet }}
-          dotnet-quality: ga
       - name: Verify quality
         run: dotnet test code/Eshva.Caching.Abstractions.slnx --configuration Release --framework ${{ matrix.framework }} --logger:"xunit;LogFilePath=test_result.xml" --results-directory .
       - name: Upload test results

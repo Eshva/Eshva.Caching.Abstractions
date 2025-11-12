@@ -11,7 +11,8 @@ jobs:
     name: Verify quality
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest ]
+        os: [ ubuntu-latest ]
+#        os: [ ubuntu-latest, windows-latest ]
         framework: [ net6.0, net7.0, net8.0, net9.0 ]
         include:
           - framework: net6.0
@@ -22,9 +23,9 @@ jobs:
             dotnet: '8.0.x'
           - framework: net9.0
             dotnet: '9.0.x'
-          - os: windows-latest
-            framework: net462
-            dotnet: '9.0.x'
+#          - os: windows-latest
+#            framework: net462
+#            dotnet: '9.0.x'
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     steps:

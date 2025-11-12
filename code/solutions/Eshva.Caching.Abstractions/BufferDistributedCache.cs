@@ -86,7 +86,7 @@ public abstract class BufferDistributedCache : IBufferDistributedCache {
   /// </exception>
   public async Task<byte[]?> GetAsync(string key, CancellationToken token = default) {
     _cacheDatastore.ValidateKey(key);
-    _cacheInvalidation.PurgeEntriesIfRequired(token);
+    _cacheInvalidation.PurgeEntriesIfRequired();
 
     using var destination = StreamManager.GetStream();
     var (isEntryGotten, cacheEntryExpiry) =
@@ -133,7 +133,7 @@ public abstract class BufferDistributedCache : IBufferDistributedCache {
     DistributedCacheEntryOptions options,
     CancellationToken token = new()) {
     _cacheDatastore.ValidateKey(key);
-    _cacheInvalidation.PurgeEntriesIfRequired(token);
+    _cacheInvalidation.PurgeEntriesIfRequired();
     var entryExpiry = MakeCacheEntryExpiry(options);
     await _cacheDatastore.SetEntry(
         key,
@@ -170,7 +170,7 @@ public abstract class BufferDistributedCache : IBufferDistributedCache {
   /// </exception>
   public async Task RefreshAsync(string key, CancellationToken token = new()) {
     _cacheDatastore.ValidateKey(key);
-    _cacheInvalidation.PurgeEntriesIfRequired(token);
+    _cacheInvalidation.PurgeEntriesIfRequired();
     var entryExpiry = UpdateCacheEntryExpiry(
       await _cacheDatastore.GetEntryExpiry(key, token).ConfigureAwait(continueOnCapturedContext: false));
     await _cacheDatastore.RefreshEntry(key, entryExpiry, token)
@@ -210,7 +210,7 @@ public abstract class BufferDistributedCache : IBufferDistributedCache {
   /// </exception>
   public async Task RemoveAsync(string key, CancellationToken token = new()) {
     _cacheDatastore.ValidateKey(key);
-    _cacheInvalidation.PurgeEntriesIfRequired(token);
+    _cacheInvalidation.PurgeEntriesIfRequired();
     await _cacheDatastore.RemoveEntry(key, token).ConfigureAwait(continueOnCapturedContext: false);
     _logger.LogDebug("Cache entry {EntryKey} removed from cache", key);
   }
@@ -252,7 +252,7 @@ public abstract class BufferDistributedCache : IBufferDistributedCache {
   /// </exception>
   public async ValueTask<bool> TryGetAsync(string key, IBufferWriter<byte> destination, CancellationToken token = new()) {
     _cacheDatastore.ValidateKey(key);
-    _cacheInvalidation.PurgeEntriesIfRequired(token);
+    _cacheInvalidation.PurgeEntriesIfRequired();
     var (isEntryGotten, cacheEntryExpiry) = await _cacheDatastore.TryGetEntry(
         key,
         destination,
@@ -301,7 +301,7 @@ public abstract class BufferDistributedCache : IBufferDistributedCache {
     DistributedCacheEntryOptions options,
     CancellationToken token = default) {
     _cacheDatastore.ValidateKey(key);
-    _cacheInvalidation.PurgeEntriesIfRequired(token);
+    _cacheInvalidation.PurgeEntriesIfRequired();
     var entryExpiry = MakeCacheEntryExpiry(options);
     await _cacheDatastore.SetEntry(
         key,

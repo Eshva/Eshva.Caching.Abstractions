@@ -1,7 +1,8 @@
 ﻿Feature: Get entry from buffer distributed cache
 
   Background:
-    Given purging interval is 3 minutes
+    Given purging interval is 00:03:00
+    And maximal cache invalidation duration is 00:02:59
     And default sliding expiration interval is 1 minutes
     And clock set at today 00:00:00
     And buffer distributed cache

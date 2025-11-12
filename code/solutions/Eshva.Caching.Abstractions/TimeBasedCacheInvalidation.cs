@@ -16,19 +16,48 @@ public abstract class TimeBasedCacheInvalidation : ICacheInvalidation, ICacheInv
   /// <summary>
   /// Initializes a new instance of a time-based cache invalidation.
   /// </summary>
+  /// <remarks>
+  /// Cache invalidation could be a resource intensive operation. It shouldn't run very often. The interval between cache
+  /// invalidation
+  /// runs defined using <paramref name="expiredEntriesPurgingInterval"/>. Cache invalidation could freeze (for instance I
+  /// noticed it
+  /// with NATS .NET client), it's wise to limit its duration. You can do it with
+  /// <paramref name="maximalCacheInvalidationDuration"/>.
+  /// If we'd don't limit this duration, cache invalidation can be disabled until application restart.
+  /// </remarks>
   /// <param name="expiredEntriesPurgingInterval">Expired entries purging interval.</param>
+  /// <param name="maximalCacheInvalidationDuration">Maximal cache invalidation duration.</param>
   /// <param name="expiryCalculator">Cache entry expiry calculator.</param>
   /// <param name="timeProvider">Time provider.</param>
   /// <param name="logger">Logger.</param>
   /// <exception cref="ArgumentNullException">
   /// Value of a required parameter isn't specified.
   /// </exception>
+  /// <exception cref="ArgumentOutOfRangeException">
+  /// One of:
+  /// <list type="bullet">
+  /// <item>Expired entries purging interval is less than minimal allowed of 1 minute.</item>
+  /// <item>Maximal cache invalidation duration is greater or equals to expired entries purging interval.</item>
+  /// </list>
+  /// </exception>
   protected TimeBasedCacheInvalidation(
     TimeSpan expiredEntriesPurgingInterval,
+    TimeSpan maximalCacheInvalidationDuration,
     CacheEntryExpiryCalculator expiryCalculator,
     TimeProvider timeProvider,
     ILogger? logger = null) {
-    _expiredEntriesPurgingInterval = expiredEntriesPurgingInterval;
+    _expiredEntriesPurgingInterval = expiredEntriesPurgingInterval >= MinimalEntriesPurgingInterval
+      ? expiredEntriesPurgingInterval
+      : throw new ArgumentOutOfRangeException(
+        $"Specified expired entries purging interval {expiredEntriesPurgingInterval} is less than minimal "
+        + $"allowed {MinimalEntriesPurgingInterval}",
+        nameof(expiredEntriesPurgingInterval));
+    _maximalCacheInvalidationDuration = maximalCacheInvalidationDuration < expiredEntriesPurgingInterval
+      ? maximalCacheInvalidationDuration
+      : throw new ArgumentOutOfRangeException(
+        $"Specified maximal cache invalidation duration {maximalCacheInvalidationDuration} is greater "
+        + $"or equals expired entries purging interval {expiredEntriesPurgingInterval}.",
+        nameof(maximalCacheInvalidationDuration));
     ExpiryCalculator = expiryCalculator ?? throw new ArgumentNullException(nameof(expiryCalculator));
     _timeProvider = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
     Logger = logger ?? new NullLogger<TimeBasedCacheInvalidation>();
@@ -51,7 +80,7 @@ public abstract class TimeBasedCacheInvalidation : ICacheInvalidation, ICacheInv
   public event EventHandler<CacheInvalidationStatistics>? CacheInvalidationCompleted;
 
   /// <inheritdoc/>
-  public void PurgeEntriesIfRequired(CancellationToken token = default) {
+  public void PurgeEntriesIfRequired() {
     const byte purgingInProgress = 1;
     const byte notYetPurging = 0;
 
@@ -64,7 +93,8 @@ public abstract class TimeBasedCacheInvalidation : ICacheInvalidation, ICacheInv
       if (!ShouldPurgeEntries()) return;
 
       _cacheInvalidatedAt = _timeProvider.GetUtcNow();
-      _ = Task.Run(() => InvalidateCache(token), token);
+      var invalidationTimeoutCancellationToken = new CancellationTokenSource(_maximalCacheInvalidationDuration).Token;
+      _ = Task.Run(() => InvalidateCache(invalidationTimeoutCancellationToken), invalidationTimeoutCancellationToken);
     }
     finally {
       Interlocked.Exchange(ref _isPurgingInProgress, notYetPurging);
@@ -133,4 +163,7 @@ public abstract class TimeBasedCacheInvalidation : ICacheInvalidation, ICacheInv
   private readonly TimeProvider _timeProvider;
   private DateTimeOffset _cacheInvalidatedAt;
   private int _isPurgingInProgress;
+  private TimeSpan _maximalCacheInvalidationDuration;
+
+  private static readonly TimeSpan MinimalEntriesPurgingInterval = TimeSpan.FromMinutes(value: 1D);
 }

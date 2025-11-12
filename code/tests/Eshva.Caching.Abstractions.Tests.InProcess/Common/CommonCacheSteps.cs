@@ -15,9 +15,13 @@ internal class CommonCacheSteps {
   public void GivenClockSetAtToday(TimeSpan timeOfDay) =>
     _cachesContext.TimeProvider.AdjustTime(_cachesContext.Today + timeOfDay);
 
-  [Given("purging interval is (.*) minutes")]
-  public void GivenPurgingIntervalIsMinutes(double purgingInterval) =>
-    _cachesContext.PurgingInterval = TimeSpan.FromMinutes(purgingInterval);
+  [Given("purging interval is (.*)")]
+  public void GivenPurgingIntervalIs(TimeSpan purgingInterval) =>
+    _cachesContext.PurgingInterval = purgingInterval;
+
+  [Given("maximal cache invalidation duration is (.*)")]
+  public void GivenMaximalCacheInvalidationDurationIs(TimeSpan maximalCacheInvalidationDuration) =>
+    _cachesContext.MaximalPurgingDuration = maximalCacheInvalidationDuration;
 
   [Given("default sliding expiration interval is (.*) minutes")]
   public void GivenDefaultSlidingExpirationIntervalIsMinutes(double defaultSlidingExpirationInterval) =>

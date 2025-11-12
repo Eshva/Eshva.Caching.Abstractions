@@ -17,6 +17,16 @@ internal class TimeBasedCacheInvalidationSteps {
   public void GivenTimeBasedCacheInvalidationWithDefinedArguments() =>
     CreateTimeBasedCacheInvalidation();
 
+  [Given("invalidation duration testing cache invalidation with defined arguments")]
+  public void GivenInvalidationDurationTestingCacheInvalidationWithDefinedArguments() =>
+    _sut = new InvalidationDurationTestingCacheInvalidation(
+      _cachesContext.PurgingInterval,
+      _cachesContext.MaximalPurgingDuration,
+      _cachesContext.ExpiryCalculator,
+      _cachesContext.TimeProvider,
+      XUnitLogger.CreateLogger<InvalidationDurationTestingCacheInvalidation>(_cachesContext.XUnitLogger),
+      _purgingSignal);
+
   [Given("cache invalidation requested")]
   public void GivenCacheInvalidationRequested() =>
     RequestCacheInvalidation();
@@ -44,7 +54,7 @@ internal class TimeBasedCacheInvalidationSteps {
 
   [Then("purging is successfully done")]
   public void ThenPurgingIsSuccessfullyDone() =>
-    _purgingSignal.Wait(TimeSpan.FromSeconds(value: 5D)).Should().BeTrue();
+    _purgingSignal.Wait(TimeSpan.FromMilliseconds(value: 100D)).Should().BeTrue();
 
   [Then("purging is not started")]
   public void ThenPurgingIsNotStarted() =>
@@ -52,7 +62,7 @@ internal class TimeBasedCacheInvalidationSteps {
 
   [Then("only one purging should be done")]
   public void ThenOnlyOnePurgingShouldBeDone() =>
-    _sut.NumberOfPurgeStarted.Should().Be(expected: 1);
+    (_sut as TestCacheInvalidation)?.NumberOfPurgeStarted.Should().Be(expected: 1);
 
   [Then("purging started event risen once")]
   public void ThenPurgingStartedEventRisenOnce() =>
@@ -62,11 +72,18 @@ internal class TimeBasedCacheInvalidationSteps {
   public void ThenPurgingCompletedEventRisenOnce() =>
     _purgingCompletedCount.Should().Be(expected: 1);
 
+  [Then("purging is successfully done in about (.*)")]
+  public void ThenPurgingIsSuccessfullyDoneInAbout(TimeSpan invalidationDuration) {
+    var invalidationCompletedAt = DateTimeOffset.UtcNow;
+    _invalidationStartedAt.Add(invalidationDuration).Should().BeCloseTo(invalidationCompletedAt, TimeSpan.FromSeconds(value: 2D));
+  }
+
   private void CheckCacheInvalidationNotStarted() =>
-    _purgingSignal.Wait(TimeSpan.FromSeconds(value: 5D)).Should().BeFalse();
+    _purgingSignal.Wait(TimeSpan.FromMilliseconds(value: 100D)).Should().BeFalse();
 
   private void RequestCacheInvalidation() {
     try {
+      _invalidationStartedAt = DateTimeOffset.UtcNow;
       _sut.PurgeEntriesIfRequired();
     }
     catch (Exception exception) {
@@ -78,6 +95,7 @@ internal class TimeBasedCacheInvalidationSteps {
     try {
       _sut = new TestCacheInvalidation(
         _cachesContext.PurgingInterval,
+        _cachesContext.MaximalPurgingDuration,
         _cachesContext.ExpiryCalculator,
         _cachesContext.TimeProvider,
         XUnitLogger.CreateLogger<TestCacheInvalidation>(_cachesContext.XUnitLogger),
@@ -93,8 +111,8 @@ internal class TimeBasedCacheInvalidationSteps {
   private readonly CachesContext _cachesContext;
   private readonly ErrorHandlingContext _errorHandlingContext;
   private readonly ManualResetEventSlim _purgingSignal;
-
   private int _purgingCompletedCount;
   private int _purgingStartedCount;
-  private TestCacheInvalidation _sut = null!;
+  private TimeBasedCacheInvalidation _sut = null!;
+  private DateTimeOffset _invalidationStartedAt;
 }

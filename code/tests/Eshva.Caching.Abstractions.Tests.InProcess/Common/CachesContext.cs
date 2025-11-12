@@ -26,6 +26,8 @@ internal class CachesContext {
 
   public TimeSpan PurgingInterval { get; set; }
 
+  public TimeSpan MaximalPurgingDuration { get; set; }
+
   public TimeSpan DefaultSlidingExpirationInterval { get; set; }
 
   public FakeTimeProvider TimeProvider { get; set; }
@@ -47,6 +49,7 @@ internal class CachesContext {
 
     CacheInvalidation = new TestCacheInvalidation(
       PurgingInterval,
+      MaximalPurgingDuration,
       ExpiryCalculator,
       TimeProvider,
       Meziantou.Extensions.Logging.Xunit.XUnitLogger.CreateLogger<TestCacheInvalidation>(XUnitLogger),

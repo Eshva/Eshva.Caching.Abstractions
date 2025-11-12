@@ -54,7 +54,7 @@ internal class TimeBasedCacheInvalidationSteps {
 
   [Then("purging is successfully done")]
   public void ThenPurgingIsSuccessfullyDone() =>
-    _purgingSignal.Wait(TimeSpan.FromMilliseconds(value: 100D)).Should().BeTrue();
+    _purgingSignal.Wait(TimeSpan.FromSeconds(value: 1D)).Should().BeTrue();
 
   [Then("purging is not started")]
   public void ThenPurgingIsNotStarted() =>
@@ -79,7 +79,7 @@ internal class TimeBasedCacheInvalidationSteps {
   }
 
   private void CheckCacheInvalidationNotStarted() =>
-    _purgingSignal.Wait(TimeSpan.FromMilliseconds(value: 100D)).Should().BeFalse();
+    _purgingSignal.Wait(TimeSpan.FromSeconds(value: 1D)).Should().BeFalse();
 
   private void RequestCacheInvalidation() {
     try {

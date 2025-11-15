@@ -2,6 +2,7 @@
 using Eshva.Testing.Reqnroll.Contexts;
 using FluentAssertions;
 using Meziantou.Extensions.Logging.Xunit.v3;
+using Microsoft.Extensions.Logging;
 using Reqnroll;
 
 namespace Eshva.Caching.Abstractions.Tests.InProcess.Features.CacheInvalidation;
@@ -35,6 +36,13 @@ internal class TimeBasedCacheInvalidationSteps {
   [Given("purging is not started")]
   public void GivenPurgingIsNotStarted() =>
     CheckCacheInvalidationNotStarted();
+
+  [Given("cache invalidation logger")]
+  public void GivenCacheInvalidationLogger() =>
+    _invalidationLogger = XUnitLogger.CreateLogger<TestCacheInvalidation>(_cachesContext.Logger);
+
+  [Given("cache invalidation logger not specified")]
+  public void GivenCacheInvalidationLoggerNotSpecified() => _invalidationLogger = null;
 
   [When("I construct time-based cache invalidation with defined arguments")]
   public void WhenIConstructTimeBasedCacheInvalidationWithDefinedArguments() =>
@@ -99,7 +107,7 @@ internal class TimeBasedCacheInvalidationSteps {
         _cachesContext.MaximalPurgingDuration,
         _cachesContext.ExpiryCalculator,
         _cachesContext.TimeProvider,
-        XUnitLogger.CreateLogger<TestCacheInvalidation>(_cachesContext.Logger),
+        _invalidationLogger!,
         _purgingSignal);
       _sut.CacheInvalidationStarted += (_, _) => _purgingStartedCount++;
       _sut.CacheInvalidationCompleted += (_, _) => _purgingCompletedCount++;
@@ -116,4 +124,5 @@ internal class TimeBasedCacheInvalidationSteps {
   private int _purgingStartedCount;
   private TimeBasedCacheInvalidation _sut = null!;
   private DateTimeOffset _invalidationStartedAt;
+  private ILogger<TestCacheInvalidation>? _invalidationLogger;
 }

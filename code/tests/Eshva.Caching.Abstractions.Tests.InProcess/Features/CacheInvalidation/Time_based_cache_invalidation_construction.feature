@@ -3,6 +3,7 @@
   Background:
     Given default sliding expiration interval is 1 minutes
     And cache entry expiry calculator with defined arguments
+    And cache invalidation logger
 
   Scenario: 01. Can construct time-based cache invalidation with purging interval greater than minimal purging interval
     Given purging interval is 00:06:00
@@ -47,3 +48,10 @@
     And maximal cache invalidation duration is 00:01:00
     When I construct time-based cache invalidation with defined arguments
     Then argument out of range error should be reported
+
+  Scenario: 08. Can construct time-based cache invalidation without logger
+    Given purging interval is 00:06:00
+    And maximal cache invalidation duration is 00:05:59
+    And cache invalidation logger not specified
+    When I construct time-based cache invalidation with defined arguments
+    Then no errors are reported

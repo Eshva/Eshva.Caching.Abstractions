@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace Eshva.Caching.Abstractions.Tests.InProcess.Features.CacheInvalidation;
+namespace Eshva.Caching.Abstractions.Tests.InProcess.Common;
 
 internal sealed class TestCacheInvalidation : TimeBasedCacheInvalidation {
   public TestCacheInvalidation(

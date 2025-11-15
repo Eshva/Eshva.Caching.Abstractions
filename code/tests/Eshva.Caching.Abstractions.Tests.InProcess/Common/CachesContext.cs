@@ -1,5 +1,4 @@
 ﻿using Eshva.Caching.Abstractions.Tests.InProcess.Features.BufferDistributedCache;
-using Eshva.Caching.Abstractions.Tests.InProcess.Features.CacheInvalidation;
 using Meziantou.Extensions.Logging.Xunit.v3;
 using Microsoft.Extensions.Time.Testing;
 using Xunit;

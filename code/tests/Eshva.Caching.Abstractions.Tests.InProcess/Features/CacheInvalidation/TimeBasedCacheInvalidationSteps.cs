@@ -1,6 +1,6 @@
 ﻿using Eshva.Caching.Abstractions.Tests.InProcess.Common;
 using FluentAssertions;
-using Meziantou.Extensions.Logging.Xunit;
+using Meziantou.Extensions.Logging.Xunit.v3;
 using Reqnroll;
 
 namespace Eshva.Caching.Abstractions.Tests.InProcess.Features.CacheInvalidation;
@@ -24,7 +24,7 @@ internal class TimeBasedCacheInvalidationSteps {
       _cachesContext.MaximalPurgingDuration,
       _cachesContext.ExpiryCalculator,
       _cachesContext.TimeProvider,
-      XUnitLogger.CreateLogger<InvalidationDurationTestingCacheInvalidation>(_cachesContext.XUnitLogger),
+      XUnitLogger.CreateLogger<InvalidationDurationTestingCacheInvalidation>(_cachesContext.Logger),
       _purgingSignal);
 
   [Given("cache invalidation requested")]
@@ -98,7 +98,7 @@ internal class TimeBasedCacheInvalidationSteps {
         _cachesContext.MaximalPurgingDuration,
         _cachesContext.ExpiryCalculator,
         _cachesContext.TimeProvider,
-        XUnitLogger.CreateLogger<TestCacheInvalidation>(_cachesContext.XUnitLogger),
+        XUnitLogger.CreateLogger<TestCacheInvalidation>(_cachesContext.Logger),
         _purgingSignal);
       _sut.CacheInvalidationStarted += (_, _) => _purgingStartedCount++;
       _sut.CacheInvalidationCompleted += (_, _) => _purgingCompletedCount++;

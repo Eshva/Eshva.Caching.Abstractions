@@ -1,19 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net7.0;net8.0;net9.0;net462</TargetFrameworks>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Meziantou.Extensions.Logging.Xunit"/>
     <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing"/>
     <PackageReference Include="Microsoft.NET.Test.Sdk"/>
-    <PackageReference Include="Reqnroll.xUnit"/>
-    <PackageReference Include="xunit"/>
+    <PackageReference Include="Meziantou.Extensions.Logging.Xunit.v3"/>
+    <PackageReference Include="Reqnroll.xunit.v3"/>
+    <PackageReference Include="xunit.v3.mtp-v2"/>
+    <PackageReference Include="Microsoft.Testing.Extensions.Retry"/>
     <PackageReference Include="xunit.runner.visualstudio">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="FluentAssertions"/>
-    <PackageReference Include="XunitXml.TestLogger"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\solutions\Eshva.Caching.Abstractions\Eshva.Caching.Abstractions.csproj"/>

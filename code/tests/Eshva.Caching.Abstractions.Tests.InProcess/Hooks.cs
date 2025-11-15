@@ -1,6 +1,6 @@
 ﻿using Eshva.Caching.Abstractions.Tests.InProcess.Common;
 using Reqnroll;
-using Xunit.Abstractions;
+using Xunit;
 
 namespace Eshva.Caching.Abstractions.Tests.InProcess;
 

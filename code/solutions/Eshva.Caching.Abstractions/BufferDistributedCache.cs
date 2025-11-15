@@ -7,11 +7,12 @@ using Microsoft.IO;
 namespace Eshva.Caching.Abstractions;
 
 /// <summary>
-///
+/// Base class for distributed caches. Implements behavioral contract of <see cref="IBufferDistributedCache"/> and
+/// <see cref="IDistributedCache"/>.
 /// </summary>
 public abstract class BufferDistributedCache : IBufferDistributedCache {
   /// <summary>
-  /// Initializes a new instance of a entry is not present in cache datastore.
+  /// Initializes a new instance of a distributed cache.
   /// </summary>
   /// <param name="cacheInvalidation">Cache invalidation.</param>
   /// <param name="cacheDatastore"></param>

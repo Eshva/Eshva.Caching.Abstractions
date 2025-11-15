@@ -1,12 +1,13 @@
 ﻿using Eshva.Caching.Abstractions.Tests.InProcess.Features.BufferDistributedCache;
 using Eshva.Caching.Abstractions.Tests.InProcess.Features.CacheInvalidation;
+using Meziantou.Extensions.Logging.Xunit.v3;
 using Microsoft.Extensions.Time.Testing;
-using Xunit.Abstractions;
+using Xunit;
 
 namespace Eshva.Caching.Abstractions.Tests.InProcess.Common;
 
 internal class CachesContext {
-  public CachesContext(ITestOutputHelper xUnitLogger) {
+  public CachesContext(ITestOutputHelper logger) {
     var now = DateTimeOffset.UtcNow;
     Today = new DateTimeOffset(
       now.Year,
@@ -17,10 +18,10 @@ internal class CachesContext {
       second: 0,
       TimeSpan.Zero);
     TimeProvider = new FakeTimeProvider(Today);
-    XUnitLogger = xUnitLogger;
+    Logger = logger;
   }
 
-  public ITestOutputHelper XUnitLogger { get; }
+  public ITestOutputHelper Logger { get; }
 
   public DateTimeOffset Today { get; }
 
@@ -52,7 +53,7 @@ internal class CachesContext {
       MaximalPurgingDuration,
       ExpiryCalculator,
       TimeProvider,
-      Meziantou.Extensions.Logging.Xunit.XUnitLogger.CreateLogger<TestCacheInvalidation>(XUnitLogger),
+      XUnitLogger.CreateLogger<TestCacheInvalidation>(Logger),
       PurgingSignal);
 
     CacheDatastore = new TestInMemoryCacheDatastore();
@@ -60,6 +61,6 @@ internal class CachesContext {
     Cache = new TestInMemoryCache(
       CacheInvalidation,
       CacheDatastore,
-      Meziantou.Extensions.Logging.Xunit.XUnitLogger.CreateLogger<TestInMemoryCache>(XUnitLogger));
+      XUnitLogger.CreateLogger<TestInMemoryCache>(Logger));
   }
 }

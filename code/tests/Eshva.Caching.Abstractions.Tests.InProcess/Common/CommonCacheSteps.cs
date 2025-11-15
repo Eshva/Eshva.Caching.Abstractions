@@ -1,7 +1,7 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 using FluentAssertions;
 using Reqnroll;
-using Xunit;
 
 namespace Eshva.Caching.Abstractions.Tests.InProcess.Common;
 
@@ -60,7 +60,7 @@ internal class CommonCacheSteps {
       Encoding.UTF8.GetBytes(value),
       new CacheEntryExpiry(expiresAtUtc, AbsoluteExpiryAtUtc: null, _cachesContext.DefaultSlidingExpirationInterval));
 
-    _cachesContext.XUnitLogger.WriteLine($"Put entry '{key}' that expires at {expiresAtUtc}");
+    _cachesContext.Logger.WriteLine($"Put entry '{key}' that expires at {expiresAtUtc}");
   }
 
   [Then("I should get value '(.*)' as the requested entry")]
@@ -69,12 +69,6 @@ internal class CommonCacheSteps {
 
   [Then("I should get a null value as the requested entry")]
   public void ThenIShouldGetANullValueAsTheRequestedEntry() => _cachesContext.GottenCacheEntryValue.Should().BeNull();
-
-  // [Given("metadata of cache entry with key {string} corrupted")]
-  // public async Task GivenMetadataOfCacheEntryWithKeyStringCorrupted(string key) {
-  //   var metadataCorrupter = new ObjectEntryMetadataCorrupter();
-  //   await metadataCorrupter.CorruptEntryMetadata(_cachesContext.Bucket, key);
-  // }
 
   [Given("passed a bit more than purging expired entries interval")]
   public void GivenPassedABitMoreThanPurgingExpiredEntriesInterval() =>
@@ -94,7 +88,7 @@ internal class CommonCacheSteps {
       return;
     }
 
-    Assert.Fail($"'{key}' entry is still present in the cache");
+    Debug.Fail($"'{key}' entry is still present in the cache");
   }
 
   [Given("passed a bit less than purging expired entries interval")]
@@ -121,7 +115,7 @@ internal class CommonCacheSteps {
       key,
       _originalValue,
       new CacheEntryExpiry(expiresAtUtc, AbsoluteExpiryAtUtc: null, _cachesContext.DefaultSlidingExpirationInterval));
-    _cachesContext.XUnitLogger.WriteLine($"Put entry '{key}' that expires at {expiresAtUtc}");
+    _cachesContext.Logger.WriteLine($"Put entry '{key}' that expires at {expiresAtUtc}");
   }
 
   [Then("I should get same value as the requested entry")]

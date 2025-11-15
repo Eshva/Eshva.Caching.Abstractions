@@ -21,7 +21,7 @@
 
   Scenario: 03. Refresh missed entry should report an error
     When I refresh 'missing' cache entry asynchronously
-    Then invalid operation exception should be reported
+    Then invalid operation error should be reported
 
   Scenario: 04. Refresh a cache entry should trigger cache invalidation if its interval has passed
     Given time passed by 00:03:00

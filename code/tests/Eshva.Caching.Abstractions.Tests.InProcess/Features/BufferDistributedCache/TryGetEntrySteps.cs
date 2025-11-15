@@ -1,4 +1,5 @@
 ﻿using Eshva.Caching.Abstractions.Tests.InProcess.Common;
+using Eshva.Testing.Reqnroll.Contexts;
 using FluentAssertions;
 using Microsoft.IO;
 using Reqnroll;
@@ -15,7 +16,7 @@ internal class TryGetEntrySteps {
   [When("I try get '(.*)' cache entry asynchronously")]
   public async Task WhenITryGetCacheEntryAsynchronously(string key) {
     try {
-      using var destination = StreamManager.GetStream();
+      await using var destination = StreamManager.GetStream();
       _isSuccessfullyRead = await _cachesContext.Cache.TryGetAsync(key, destination);
       _cachesContext.GottenCacheEntryValue = destination.ToArray();
     }

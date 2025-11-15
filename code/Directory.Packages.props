@@ -5,6 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="CommunityToolkit.HighPerformance" Version="8.4.0"/>
+    <PackageVersion Include="Eshva.Testing.Reqnroll" Version="1.1.2"/>
     <PackageVersion Include="JetBrains.Annotations" Version="2025.2.2"/>
     <PackageVersion Include="Microsoft.Bcl.TimeProvider" Version="10.0.0"/>
     <PackageVersion Include="Microsoft.Extensions.Caching.Abstractions" Version="10.0.0"/>

@@ -1,4 +1,5 @@
-﻿using Eshva.Caching.Abstractions.Tests.InProcess.Common;
+﻿using Eshva.Caching.Abstractions.Distributed;
+using Eshva.Caching.Abstractions.Tests.InProcess.Common;
 using Eshva.Testing.Reqnroll.Contexts;
 using FluentAssertions;
 using Reqnroll;

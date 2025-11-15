@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.IO;
 
-namespace Eshva.Caching.Abstractions;
+namespace Eshva.Caching.Abstractions.Distributed;
 
 /// <summary>
 /// Base class for distributed caches. Implements behavioral contract of <see cref="IBufferDistributedCache"/> and

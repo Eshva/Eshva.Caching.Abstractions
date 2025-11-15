@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Eshva.Caching.Abstractions;
+namespace Eshva.Caching.Abstractions.Distributed;
 
 /// <summary>
 /// Time-based cache invalidation.

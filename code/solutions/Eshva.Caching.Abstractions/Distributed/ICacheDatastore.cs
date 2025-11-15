@@ -1,6 +1,6 @@
 ﻿using System.Buffers;
 
-namespace Eshva.Caching.Abstractions;
+namespace Eshva.Caching.Abstractions.Distributed;
 
 /// <summary>
 /// Cache datastore.

@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
+using Eshva.Caching.Abstractions.Distributed;
 
-namespace Eshva.Caching.Abstractions.Tests.InProcess.Features.BufferDistributedCache;
+namespace Eshva.Caching.Abstractions.Tests.InProcess.Common;
 
 internal sealed class TestInMemoryCacheDatastore : ICacheDatastore {
   public void Add(string key, byte[] value, CacheEntryExpiry expiry) =>

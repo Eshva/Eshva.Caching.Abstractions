@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace Eshva.Caching.Abstractions;
+namespace Eshva.Caching.Abstractions.Distributed;
 
 /// <summary>
 /// Contract of cache invalidation notifier.

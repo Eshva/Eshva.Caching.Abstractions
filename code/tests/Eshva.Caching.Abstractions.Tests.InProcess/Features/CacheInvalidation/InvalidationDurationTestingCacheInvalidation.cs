@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Eshva.Caching.Abstractions.Distributed;
+using Microsoft.Extensions.Logging;
 
 namespace Eshva.Caching.Abstractions.Tests.InProcess.Features.CacheInvalidation;
 

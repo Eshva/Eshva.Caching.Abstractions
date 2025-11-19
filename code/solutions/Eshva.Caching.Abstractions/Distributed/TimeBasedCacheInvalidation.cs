@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using System.Diagnostics;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -132,12 +133,14 @@ public abstract class TimeBasedCacheInvalidation : ICacheInvalidation, ICacheInv
 
   private async Task InvalidateCache(CancellationToken token = default) {
     uint purgedEntriesCount = 0;
+    long startTime = 0;
     try {
       NotifyPurgeStarted();
+      startTime = Stopwatch.GetTimestamp();
       purgedEntriesCount = await DeleteExpiredCacheEntries(token).ConfigureAwait(continueOnCapturedContext: false);
     }
     finally {
-      NotifyPurgeCompleted(new CacheInvalidationStatistics(purgedEntriesCount));
+      NotifyPurgeCompleted(new CacheInvalidationStatistics(purgedEntriesCount, TimeSpan.FromTicks(Stopwatch.GetTimestamp() - startTime)));
     }
   }
 

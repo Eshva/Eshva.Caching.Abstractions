@@ -11,11 +11,11 @@ public interface ICacheDatastore {
   /// </summary>
   /// <param name="key">Cache entry key.</param>
   /// <param name="cancellation">Cancellation token.</param>
-  /// <returns>Cache entry expiry information.</returns>
+  /// <returns>Tuple: does entry exist, cache entry expiry information.</returns>
   /// <exception cref="InvalidOperationException">
   /// The entry with <paramref name="key"/> not found.
   /// </exception>
-  Task<CacheEntryExpiry> GetEntryExpiry(string key, CancellationToken cancellation);
+  Task<(bool doesExist, CacheEntryExpiry entryExpiry)> GetEntryExpiry(string key, CancellationToken cancellation);
 
   /// <summary>
   /// Refresh a cache entry expiry information.
@@ -46,11 +46,11 @@ public interface ICacheDatastore {
   /// <param name="key">Cache entry key.</param>
   /// <param name="destination">Entry value destination buffer writer.</param>
   /// <param name="cancellation">Cancellation token.</param>
-  /// <returns>Tuple: is entry gotten, cache entry expiry information.</returns>
+  /// <returns>Tuple: does entry exist, cache entry expiry information.</returns>
   /// <exception cref="InvalidOperationException">
   /// Failed to get cache entry.
   /// </exception>
-  Task<(bool isEntryGotten, CacheEntryExpiry cacheEntryExpiry)> TryGetEntry(
+  Task<(bool doesExist, CacheEntryExpiry entryExpiry)> TryGetEntry(
     string key,
     IBufferWriter<byte> destination,
     CancellationToken cancellation);

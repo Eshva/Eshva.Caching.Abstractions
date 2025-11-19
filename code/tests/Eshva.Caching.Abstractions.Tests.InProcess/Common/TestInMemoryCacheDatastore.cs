@@ -24,27 +24,27 @@ internal sealed class TestInMemoryCacheDatastore : ICacheDatastore {
     return Task.CompletedTask;
   }
 
-  Task<CacheEntryExpiry> ICacheDatastore.GetEntryExpiry(string key, CancellationToken cancellation) =>
+  Task<(bool doesExist, CacheEntryExpiry entryExpiry)> ICacheDatastore.GetEntryExpiry(string key, CancellationToken cancellation) =>
     !_entries.TryGetValue(key, out var entry)
-      ? throw new InvalidOperationException("The entry does not exist.")
-      : Task.FromResult(entry.Expiry);
+      ? Task.FromResult((false, new CacheEntryExpiry(DateTimeOffset.MaxValue, AbsoluteExpiryAtUtc: null, SlidingExpiryInterval: null)))
+      : Task.FromResult((true, entry.Expiry));
 
   Task ICacheDatastore.RemoveEntry(string key, CancellationToken cancellation) {
     _entries.Remove(key);
     return Task.CompletedTask;
   }
 
-  Task<(bool isEntryGotten, CacheEntryExpiry cacheEntryExpiry)> ICacheDatastore.TryGetEntry(
+  Task<(bool doesExist, CacheEntryExpiry entryExpiry)> ICacheDatastore.TryGetEntry(
     string key,
     IBufferWriter<byte> destination,
     CancellationToken cancellation) {
     if (!_entries.TryGetValue(key, out var entry)) {
-      return Task.FromResult<(bool isEntryGotten, CacheEntryExpiry cacheEntryExpiry)>(
+      return Task.FromResult(
         (false, new CacheEntryExpiry(DateTimeOffset.MinValue, AbsoluteExpiryAtUtc: null, SlidingExpiryInterval: null)));
     }
 
     destination.Write(entry.Value);
-    return Task.FromResult<(bool isEntryGotten, CacheEntryExpiry cacheEntryExpiry)>((true, _entries[key].Expiry));
+    return Task.FromResult((true, _entries[key].Expiry));
   }
 
   Task ICacheDatastore.SetEntry(

@@ -46,14 +46,14 @@ public abstract class BufferDistributedCache : IBufferDistributedCache {
   /// Depending on different circumstances returns:
   /// <list type="bullet">
   /// <item>byte array - read key value,</item>
-  /// <item>null - cache key <paramref name="key"/> isn't found.</item>
+  /// <item>null - cache key <paramref name="key"/> isn't found or is expired.</item>
   /// </list>
   /// </returns>
   /// <exception cref="ArgumentException">
   /// Cache entry key is invalid.
   /// </exception>
   /// <exception cref="InvalidOperationException">
-  /// Failed to read cache entry.
+  /// Failed to read the cache entry.
   /// </exception>
   public byte[]? Get(string key) =>
     GetAsync(key).GetAwaiter().GetResult();
@@ -76,25 +76,25 @@ public abstract class BufferDistributedCache : IBufferDistributedCache {
   /// Depending on different circumstances returns:
   /// <list type="bullet">
   /// <item>byte array - read key value,</item>
-  /// <item>null - cache key <paramref name="key"/> isn't found.</item>
+  /// <item>null - cache key <paramref name="key"/> isn't found or is expired.</item>
   /// </list>
   /// </returns>
   /// <exception cref="ArgumentException">
   /// Cache entry key is invalid.
   /// </exception>
   /// <exception cref="InvalidOperationException">
-  /// Failed to read cache entry.
+  /// Failed to read the cache entry.
   /// </exception>
   public async Task<byte[]?> GetAsync(string key, CancellationToken token = default) {
     _cacheDatastore.ValidateKey(key);
     _cacheInvalidation.PurgeEntriesIfRequired();
 
     using var destination = StreamManager.GetStream();
-    var (isEntryGotten, cacheEntryExpiry) =
-      await _cacheDatastore.TryGetEntry(key, destination, token).ConfigureAwait(continueOnCapturedContext: false);
-    if (!isEntryGotten) return null;
+    var (doesExist, entryExpiry) = await _cacheDatastore.TryGetEntry(key, destination, token)
+      .ConfigureAwait(continueOnCapturedContext: false);
+    if (!doesExist || _cacheInvalidation.ExpiryCalculator.IsCacheEntryExpired(entryExpiry.ExpiresAtUtc)) return null;
 
-    await _cacheDatastore.RefreshEntry(key, UpdateCacheEntryExpiry(cacheEntryExpiry), token)
+    await _cacheDatastore.RefreshEntry(key, UpdateCacheEntryExpiry(entryExpiry), token)
       .ConfigureAwait(continueOnCapturedContext: false);
 
     return destination.ToArray();
@@ -153,7 +153,7 @@ public abstract class BufferDistributedCache : IBufferDistributedCache {
   /// Cache entry key is invalid.
   /// </exception>
   /// <exception cref="InvalidOperationException">
-  /// Cache entry with <paramref name="key"/> not found.
+  /// Failed to refresh the cache entry.
   /// </exception>
   public void Refresh(string key) =>
     RefreshAsync(key).GetAwaiter().GetResult();
@@ -167,16 +167,17 @@ public abstract class BufferDistributedCache : IBufferDistributedCache {
   /// Cache entry key is invalid.
   /// </exception>
   /// <exception cref="InvalidOperationException">
-  /// Cache entry with <paramref name="key"/> not found.
+  /// Failed to refresh the cache entry.
   /// </exception>
   public async Task RefreshAsync(string key, CancellationToken token = new()) {
     _cacheDatastore.ValidateKey(key);
     _cacheInvalidation.PurgeEntriesIfRequired();
-    var entryExpiry = UpdateCacheEntryExpiry(
-      await _cacheDatastore.GetEntryExpiry(key, token).ConfigureAwait(continueOnCapturedContext: false));
-    await _cacheDatastore.RefreshEntry(key, entryExpiry, token)
-      .ConfigureAwait(continueOnCapturedContext: false);
-    _logger.LogDebug("Cache entry {EntryKey} refreshed with expiry @{EntryExpiry}", key, entryExpiry);
+    var (doesExist, entryExpiry) = await _cacheDatastore.GetEntryExpiry(key, token).ConfigureAwait(continueOnCapturedContext: false);
+    if (!doesExist || _cacheInvalidation.ExpiryCalculator.IsCacheEntryExpired(entryExpiry.ExpiresAtUtc)) return;
+
+    var updatedEntryExpiry = UpdateCacheEntryExpiry(entryExpiry);
+    await _cacheDatastore.RefreshEntry(key, updatedEntryExpiry, token).ConfigureAwait(continueOnCapturedContext: false);
+    _logger.LogDebug("Cache entry {EntryKey} refreshed with expiry @{EntryExpiry}", key, updatedEntryExpiry);
   }
 
   /// <summary>
@@ -225,13 +226,13 @@ public abstract class BufferDistributedCache : IBufferDistributedCache {
   /// The key is not specified.
   /// </exception>
   /// <returns>
-  /// <c>true</c> - value successfully read, <c>false</c> - entry not found in the cache.
+  /// <c>true</c> - value successfully read, <c>false</c> - entry not found in the cache or is expired.
   /// </returns>
   /// <exception cref="ArgumentException">
   /// Cache entry key is invalid.
   /// </exception>
   /// <exception cref="InvalidOperationException">
-  /// Failed to read cache entry.
+  /// Failed to read the cache entry.
   /// </exception>
   public bool TryGet(string key, IBufferWriter<byte> destination) =>
     TryGetAsync(key, destination).AsTask().GetAwaiter().GetResult();
@@ -243,28 +244,24 @@ public abstract class BufferDistributedCache : IBufferDistributedCache {
   /// <param name="destination">Buffer writer to write cache entry value into.</param>
   /// <param name="token">Cancellation token.</param>
   /// <returns>
-  /// <c>true</c> - value successfully read, <c>false</c> - entry not found in the cache.
+  /// <c>true</c> - value successfully read, <c>false</c> - entry not found in the cache or is expired.
   /// </returns>
   /// <exception cref="ArgumentException">
   /// Cache entry key is invalid.
   /// </exception>
   /// <exception cref="InvalidOperationException">
-  /// Failed to read cache entry.
+  /// Failed to read the cache entry.
   /// </exception>
   public async ValueTask<bool> TryGetAsync(string key, IBufferWriter<byte> destination, CancellationToken token = new()) {
     _cacheDatastore.ValidateKey(key);
     _cacheInvalidation.PurgeEntriesIfRequired();
-    var (isEntryGotten, cacheEntryExpiry) = await _cacheDatastore.TryGetEntry(
-        key,
-        destination,
-        token)
+    var (doesExist, entryExpiry) = await _cacheDatastore.TryGetEntry(key, destination, token)
       .ConfigureAwait(continueOnCapturedContext: false);
-    if (!isEntryGotten) return false;
+    if (!doesExist || _cacheInvalidation.ExpiryCalculator.IsCacheEntryExpired(entryExpiry.ExpiresAtUtc)) return false;
 
-    var entryExpiry = UpdateCacheEntryExpiry(cacheEntryExpiry);
-    await _cacheDatastore.RefreshEntry(key, entryExpiry, token)
-      .ConfigureAwait(continueOnCapturedContext: false);
-    _logger.LogDebug("Cache entry {EntryKey} gotten and its expiry updated to @{EntryExpiry}", key, entryExpiry);
+    var updatedEntryExpiry = UpdateCacheEntryExpiry(entryExpiry);
+    await _cacheDatastore.RefreshEntry(key, updatedEntryExpiry, token).ConfigureAwait(continueOnCapturedContext: false);
+    _logger.LogDebug("Cache entry {EntryKey} gotten and its expiry updated to @{EntryExpiry}", key, updatedEntryExpiry);
     return true;
   }
 

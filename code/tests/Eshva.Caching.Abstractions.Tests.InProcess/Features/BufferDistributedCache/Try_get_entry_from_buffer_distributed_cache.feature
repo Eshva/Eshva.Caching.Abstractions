@@ -7,6 +7,7 @@
     And clock set at today 00:00:00
     And buffer distributed cache
     And entry with key 'present' and value 'present value' which expires in 00:03:00 put into cache
+    And entry with key 'expired' and value 'expired value' which expires in 00:04:00 put into cache
     And entry with key 'big one' and random byte array as value which expires in 00:03:00 put into cache
 
   Scenario: 01. Try get a present cache entry async should return the entry value and advance its expiry by sliding interval
@@ -32,9 +33,7 @@
   Scenario: 04. Try get a cache entry should trigger cache invalidation if its interval has passed
     Given time passed by 00:03:00
     When I try get 'present' cache entry asynchronously
-    Then cache entry successfully read
-    And no errors are reported
-    And cache invalidation should be triggered
+    Then cache invalidation should be triggered
 
   Scenario: 05. Try get a cache entry should not trigger cache invalidation if its interval has not passed
     Given time passed by 00:02:00
@@ -47,3 +46,11 @@
     Then no errors are reported
     And cache entry successfully read
     And I should get same value as the requested entry
+
+  Scenario: 07. Try get an expired cache entry should not return it
+    Given time passed by 00:03:00
+    And get an entry 'expired' to trigger cache invalidation
+    And time passed by 00:02:00
+    When I try get 'expired' cache entry asynchronously
+    Then cache entry did not read
+    And no errors are reported

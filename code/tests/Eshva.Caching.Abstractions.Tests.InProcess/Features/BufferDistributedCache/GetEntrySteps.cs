@@ -11,6 +11,10 @@ internal class GetEntrySteps {
     _errorHandlingContext = errorHandlingContext;
   }
 
+  [Given("get an entry {string} to trigger cache invalidation")]
+  public async Task GivenGetAnEntryStringToTriggerCacheInvalidation(string key) =>
+    await _cachesContext.Cache.GetAsync(key);
+
   [When("I get '(.*)' cache entry asynchronously")]
   public async Task WhenIGetCacheEntryAsynchronously(string key) {
     try {

@@ -21,9 +21,9 @@ internal sealed class InvalidationDurationTestingCacheInvalidation : TimeBasedCa
     CacheInvalidationCompleted += (_, _) => purgingSignal.Set();
   }
 
-  protected override async Task<CacheInvalidationStatistics> DeleteExpiredCacheEntries(CancellationToken token) {
+  protected override async Task<uint> DeleteExpiredCacheEntries(CancellationToken token) {
     await Task.Delay(_expiredEntriesPurgingInterval, token);
-    return new CacheInvalidationStatistics();
+    return 0;
   }
 
   private readonly TimeSpan _expiredEntriesPurgingInterval;

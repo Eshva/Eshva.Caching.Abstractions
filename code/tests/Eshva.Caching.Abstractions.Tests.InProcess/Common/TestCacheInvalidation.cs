@@ -22,8 +22,8 @@ internal sealed class TestCacheInvalidation : TimeBasedCacheInvalidation {
 
   public int NumberOfPurgeStarted { get; private set; }
 
-  protected override Task<CacheInvalidationStatistics> DeleteExpiredCacheEntries(CancellationToken token) {
+  protected override Task<uint> DeleteExpiredCacheEntries(CancellationToken token) {
     NumberOfPurgeStarted++;
-    return Task.FromResult(new CacheInvalidationStatistics());
+    return Task.FromResult(0U);
   }
 }

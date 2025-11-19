@@ -114,8 +114,8 @@ public abstract class TimeBasedCacheInvalidation : ICacheInvalidation, ICacheInv
   /// calculation.
   /// </remarks>
   /// <param name="cancellation">Cancellation token.</param>
-  /// <returns>Cache invalidation statistics.</returns>
-  protected abstract Task<CacheInvalidationStatistics> DeleteExpiredCacheEntries(CancellationToken cancellation);
+  /// <returns>Number of purged entries.</returns>
+  protected abstract Task<uint> DeleteExpiredCacheEntries(CancellationToken cancellation);
 
   /// <summary>
   /// Notify cache invalidation started.
@@ -131,13 +131,13 @@ public abstract class TimeBasedCacheInvalidation : ICacheInvalidation, ICacheInv
     CacheInvalidationCompleted?.Invoke(this, statistics);
 
   private async Task InvalidateCache(CancellationToken token = default) {
-    CacheInvalidationStatistics statistics = default;
+    uint purgedEntriesCount = 0;
     try {
       NotifyPurgeStarted();
-      statistics = await DeleteExpiredCacheEntries(token).ConfigureAwait(continueOnCapturedContext: false);
+      purgedEntriesCount = await DeleteExpiredCacheEntries(token).ConfigureAwait(continueOnCapturedContext: false);
     }
     finally {
-      NotifyPurgeCompleted(statistics);
+      NotifyPurgeCompleted(new CacheInvalidationStatistics(purgedEntriesCount));
     }
   }
 
